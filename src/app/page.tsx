@@ -129,10 +129,10 @@ function StarField() {
    NAVBAR
 ───────────────────────────────────────────────────────────── */
 const NAV_ITEMS = [
-  { label: "Panel",        href: "#dashboard" },
+  { label: "Panel", href: "#dashboard" },
   { label: "CME Olayları", href: "#cme" },
-  { label: "GST Uyarıları",href: "#gst" },
-  { label: "Hakkında",    href: "#info" },
+  { label: "GST Uyarıları", href: "#gst" },
+  { label: "Hakkında", href: "#info" },
 ] as const;
 
 const NAV_SIM = { label: "Simülasyon", href: "/simulasyon" } as const;
@@ -276,7 +276,7 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
             fontFamily: "var(--font-heading)", fontSize: "0.8rem", fontWeight: 700,
           }}>
             <span style={{ animation: "blink 1s ease infinite", display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "currentColor" }} />
-            GÜNCEL UYARI: {g} — {label.toUpperCase()} · Kp {latestKp.toFixed(2)}
+            GÜNCEL UYARI: {g} — {label.toLocaleUpperCase('tr-TR')} · Kp {latestKp.toFixed(2)}
           </div>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <a href="#dashboard" style={{
@@ -388,7 +388,7 @@ function StatusDashboard({ gstList, cmeList }: { gstList: GST[]; cmeList: CME[] 
           <div key={i} className="glass" style={{ padding: "2rem", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${c.color}, transparent)` }} />
             <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{c.icon}</div>
-            <div style={{ color: "#8B9AC0", fontSize: "0.75rem", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{c.title.toUpperCase()}</div>
+            <div style={{ color: "#8B9AC0", fontSize: "0.75rem", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{c.title.toLocaleUpperCase('tr-TR')}</div>
             <div className="font-heading" style={{ fontSize: "1.5rem", fontWeight: 800, color: c.color, marginBottom: "0.4rem" }}>
               {c.main ?? <><CountUp target={c.mainNum!} />{c.mainSuffix}</>}
             </div>
@@ -420,7 +420,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,107,53,0.2)" }}>
               {["Aktivite ID", "Başlangıç Zamanı", "Hız (km/s)", "Tür", "Yarı Açı", "Aletler", "Dünya-GB", ""].map(h => (
-                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8B9AC0", fontFamily: "var(--font-heading)", fontSize: "0.65rem", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{h.toUpperCase()}</th>
+                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8B9AC0", fontFamily: "var(--font-heading)", fontSize: "0.65rem", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{h.toLocaleUpperCase('tr-TR')}</th>
               ))}
             </tr>
           </thead>
@@ -628,7 +628,7 @@ function InfoCards() {
         {cards.map((c, i) => (
           <div key={i} className="glass" style={{ padding: "2rem" }}>
             <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{c.icon}</div>
-            <h3 className="font-heading" style={{ fontSize: "0.9rem", fontWeight: 700, color: "#FF6B35", marginBottom: "0.8rem", letterSpacing: "0.05em" }}>{c.title.toUpperCase()}</h3>
+            <h3 className="font-heading" style={{ fontSize: "0.9rem", fontWeight: 700, color: "#FF6B35", marginBottom: "0.8rem", letterSpacing: "0.05em" }}>{c.title.toLocaleUpperCase('tr-TR')}</h3>
             <p style={{ color: "#8B9AC0", fontSize: "0.83rem", lineHeight: 1.7 }}>{c.body}</p>
             {c.link && (
               <a href={c.link} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: "1rem", color: "#FF6B35", fontSize: "0.75rem", textDecoration: "none" }}>
@@ -664,7 +664,7 @@ function Toast({ visible, gst }: { visible: boolean; gst: GST }) {
         </span>
       </div>
       <div style={{ color: "#E8EAF0", fontSize: "0.82rem", fontWeight: 600 }}>
-        GST Olayı — {g} {label} Fırtınası
+        GST Olayı — {g} {label} Fırtına
       </div>
       <div style={{ color: "#8B9AC0", fontSize: "0.73rem", marginTop: "0.2rem" }}>
         {fmtDT(gst.startTime)} · Max Kp {kp.toFixed(2)}

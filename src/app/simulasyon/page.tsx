@@ -523,7 +523,7 @@ function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; v
           className="font-heading gradient-solar"
           style={{ fontSize: "clamp(1.2rem,3vw,1.8rem)", fontWeight: 900, letterSpacing: "0.08em" }}
         >
-          {config.level} — {config.label.toUpperCase()} FIRTINASI
+          {config.level} — {config.label.toLocaleUpperCase('tr-TR')} FIRTINASI
         </div>
         <div style={{ color: "#8B9AC0", fontSize: "0.8rem", marginTop: "0.3rem" }}>
           {isSun
@@ -536,8 +536,9 @@ function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; v
       <div
         style={{
           position: "relative",
-          width: "clamp(240px, 40vw, 560px)",
-          height: "clamp(240px, 40vw, 560px)",
+          width: isSun ? "clamp(240px, 40vw, 560px)" : "clamp(400px, 65vw, 800px)",
+          height: isSun ? "clamp(240px, 40vw, 560px)" : "clamp(400px, 65vw, 800px)",
+          margin: isSun ? "0" : "-60px 0",
         }}
       >
         {isSun && (
@@ -682,7 +683,7 @@ function MetricsPanel({ config }: { config: StormConfig }) {
               }}
             >
               <div style={{ fontSize: "0.65rem", color: "#8B9AC0", letterSpacing: "0.08em", marginBottom: "0.2rem" }}>
-                {m.label.toUpperCase()}
+                {m.label.toLocaleUpperCase('tr-TR')}
               </div>
               <div
                 className="font-heading"

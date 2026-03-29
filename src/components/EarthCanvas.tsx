@@ -343,13 +343,7 @@ function SolarWind({ kpIndex }: { kpIndex: number }) {
   );
 }
 
-/* ─── SCENE ───────────────────────────────────────────── */
-function CameraSetup() {
-  const { camera } = useThree();
-  camera.position.set(0, 4, 32);
-  camera.lookAt(0, 0, 0);
-  return null;
-}
+
 
 function EarthLights() {
   return (
@@ -364,8 +358,12 @@ function EarthLights() {
 /* ─── EXPORT ──────────────────────────────────────────── */
 export default function EarthCanvas({ kpIndex }: { kpIndex: number }) {
   return (
-    <Canvas gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }} dpr={[1, 2]}>
-      <CameraSetup />
+    <Canvas
+      gl={{ alpha: true, antialias: true }}
+      camera={{ position: [0, 0, 28], fov: 50 }}
+      style={{ background: "transparent" }}
+      dpr={[1, 2]}
+    >
       <EarthLights />
       <Suspense fallback={null}>
         <RotatingEarth />
