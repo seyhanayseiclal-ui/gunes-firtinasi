@@ -262,8 +262,10 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
             <span style={{ color: "#E8EAF0" }}>SİSTEMİ</span>
           </h1>
           <p style={{ color: "#8B9AC0", fontSize: "1rem", lineHeight: 1.7, maxWidth: "480px", marginBottom: "2rem" }}>
-            Koronel kütle fırlatma (CME) takibi ve jeomanyetik fırtına uyarıları{" "}
-            <span style={{ color: "#FFB347" }}>NASA DONKI API</span> ile gerçek zamanlı sunulmaktadır. Dünya'yı koruyun — uzay havasının önünde kalın.
+            Güneş fırtınalarını <span style={{ color: "#FFB347" }}>NASA DONKI API</span> ile gerçek zamanlı takip eden,
+            Kp indeksine göre G1–G5 risk seviyesi hesaplayan bir erken uyarı sistemi.
+            Fırtına tespit edildiğinde elektrik şirketlerine otomatik bildirim gönderip trafo yük kısıtlama komutlarını simüle ediyor.
+            Amaç, 1989 Quebec Blackout gibi felaketleri önceden önlemek.
           </p>
           {/* Alert badge */}
           <div style={{
