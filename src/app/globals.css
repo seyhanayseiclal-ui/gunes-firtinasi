@@ -1,26 +1,127 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #020818;
+  --bg-card: rgba(8, 20, 45, 0.85);
+  --solar: #FF6B35;
+  --plasma: #FFB347;
+  --danger: #FF2D55;
+  --safe: #00D4A8;
+  --text: #E8EAF0;
+  --muted: #8B9AC0;
+  --border: rgba(255, 107, 53, 0.2);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: #020818;
+  --color-foreground: #E8EAF0;
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #020818;
+  color: #E8EAF0;
+  overflow-x: hidden;
+  font-family: var(--font-inter, Inter, sans-serif);
 }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #020818; }
+::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.5); border-radius: 2px; }
+
+/* ─── KEYFRAMES ─────────────────────────────────────── */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.6); }
+}
+@keyframes sunSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes sunGlow {
+  0%, 100% { box-shadow: 0 0 40px 10px rgba(255,107,53,0.4), 0 0 80px 30px rgba(255,107,53,0.15); }
+  50% { box-shadow: 0 0 70px 20px rgba(255,107,53,0.6), 0 0 140px 60px rgba(255,107,53,0.25); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes liveDataIn {
+  0% { opacity: 0; transform: translateY(-20px) scale(0.96); box-shadow: none; }
+  55% { box-shadow: 0 0 50px rgba(255,107,53,0.8), 0 0 100px rgba(255,107,53,0.3); }
+  100% { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 0 20px rgba(255,107,53,0.3); }
+}
+@keyframes toastSlide {
+  0% { transform: translateX(120%); opacity: 0; }
+  12% { transform: translateX(0); opacity: 1; }
+  78% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+@keyframes shimmer {
+  from { background-position: 0% center; }
+  to { background-position: 200% center; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+/* ─── UTILITY CLASSES ──────────────────────────────── */
+.glass {
+  background: rgba(8, 20, 45, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 107, 53, 0.15);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+.glass:hover {
+  border-color: rgba(255, 107, 53, 0.4);
+  box-shadow: 0 8px 40px rgba(255, 107, 53, 0.15);
+  transform: translateY(-2px);
+}
+.glass-nav {
+  background: rgba(2, 8, 24, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+}
+.gradient-solar {
+  background: linear-gradient(90deg, #FF6B35, #FFB347, #FF6B35);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+.font-orbitron { font-family: var(--font-orbitron, sans-serif); }
+.live-dot {
+  width: 8px; height: 8px;
+  background: #FF2D55;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1s ease infinite;
+}
+.new-entry { animation: liveDataIn 0.9s cubic-bezier(0.17, 0.67, 0.35, 1.15) forwards; }
+.toast-anim { animation: toastSlide 6s ease forwards; }
+.sun-glow { animation: sunGlow 3s ease-in-out infinite; }
+.sun-spin { animation: sunSpin 20s linear infinite; }
+.hero-float { animation: heroFloat 6s ease-in-out infinite; }
+.fade-up { animation: fadeUp 0.6s ease forwards; }
+.star { animation: twinkle var(--dur, 3s) var(--delay, 0s) ease-in-out infinite; }
+
+/* ─── KP LEVEL COLORS ──────────────────────────────── */
+.kp-g1 { color: #FFD700; border-color: rgba(255,215,0,0.4); background: rgba(255,215,0,0.08); }
+.kp-g2 { color: #FFB347; border-color: rgba(255,179,71,0.4); background: rgba(255,179,71,0.08); }
+.kp-g3 { color: #FF6B35; border-color: rgba(255,107,53,0.4); background: rgba(255,107,53,0.08); }
+.kp-g4 { color: #FF4500; border-color: rgba(255,69,0,0.4); background: rgba(255,69,0,0.08); }
+.kp-g5 { color: #FF2D55; border-color: rgba(255,45,85,0.4); background: rgba(255,45,85,0.08); }
