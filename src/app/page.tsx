@@ -687,7 +687,7 @@ function Footer() {
     }}>
       <div>
         <span className="font-heading" style={{ color: "#FF6B35" }}>☀️ SolarWatch</span>
-        {" "} — NASA Space Apps Hackathon için geliştirildi
+        {" "} — TUA Astro Hackathon 2026 için geliştirildi
       </div>
       <div style={{ display: "flex", gap: "1.5rem" }}>
         <a href="https://api.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "#8B9AC0", textDecoration: "none" }}>NASA Açık Veri</a>
