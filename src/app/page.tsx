@@ -171,10 +171,10 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
   return (
     <section style={{
       minHeight: "100vh", display: "flex", alignItems: "center",
-      padding: "0 2rem", paddingTop: "64px",
+      padding: "0 5rem", paddingTop: "64px",
       position: "relative", zIndex: 1
     }}>
-      <div style={{ maxWidth: "1600px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "2rem", flexWrap: "nowrap" }}>
+      <div style={{ maxWidth: "1600px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4rem", flexWrap: "nowrap" }}>
         {/* Text side */}
         <div style={{ flex: "1 1 480px" }} className="fade-up">
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
