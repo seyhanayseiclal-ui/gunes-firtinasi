@@ -65,7 +65,7 @@ const STORM_CONFIGS: StormConfig[] = [
     powerGrid: "Yüksek enlem şebekeleri etkilenebilir",
     radioBlackout: "Bölgesel bozulma",
     description:
-      "Orta seviye jeomanyetik fırtına. Uyduların yönelim sistemleri etkilenebilir. Yüksek enlikte yaşayan insanlar aurora görebilir.",
+      "Orta seviye jeomanyetik fırtına. Uyduların yönelim sistemleri etkilenebilir. Yüksek enlemlerde yaşayan insanlar aurora görebilir.",
     effects: [
       "50°N üzerinde yaygın aurora",
       "Uzay aracı sürüklenmesi artar",
@@ -119,7 +119,7 @@ const STORM_CONFIGS: StormConfig[] = [
       "GPS hatası 10–100 metre artar",
       "HF radyo tamamen çöker",
       "Güç transformatörleri aşırı gerilime maruz kalır",
-      "Boru hattı korrozyon kontrol sistemleri devreye girer",
+      "Boru hattı korozyon kontrol sistemleri devreye girer",
       "Alçak irtifada uzay aracı sürüklenmesi kritik seviyeye ulaşır",
     ],
   },
@@ -158,7 +158,7 @@ const TIMELINE_STEPS = [
   { icon: "🔥", label: "Güneş Alevi", desc: "X-sınıfı patlama" },
   { icon: "☀️", label: "CME Fırlatma", desc: "Plazma bulutlanır" },
   { icon: "🚀", label: "Uzay Yolculuğu", desc: "1–3 gün sürer" },
-  { icon: "🌍", label: "Dünya Teması", desc: "Manyetopor sıkışır" },
+  { icon: "🌍", label: "Dünya Teması", desc: "Manyetopoz sıkışır" },
   { icon: "⚡", label: "Jeomanyetik Fırtına", desc: "G1–G5 aktif" },
   { icon: "🛡️", label: "Kurtarma Fazı", desc: "24–72 saat" },
 ];
@@ -337,7 +337,7 @@ function StormSelector({
           marginBottom: "1rem",
         }}
       >
-        FİRTINA SEVİYESİ SEÇ
+        FIRTINA SEVİYESİ SEÇİN
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         {STORM_CONFIGS.map((cfg) => {
@@ -488,7 +488,7 @@ function SimulationSun({ config }: { config: StormConfig }) {
           className="font-heading gradient-solar"
           style={{ fontSize: "clamp(1.2rem,3vw,1.8rem)", fontWeight: 900, letterSpacing: "0.08em" }}
         >
-          {config.level} — {config.label.toUpperCase()} FİRTINA
+          {config.level} — {config.label.toUpperCase()} FIRTINASI
         </div>
         <div style={{ color: "#8B9AC0", fontSize: "0.8rem", marginTop: "0.3rem" }}>
           {config.description.split(".")[0]}.
@@ -717,7 +717,7 @@ function StormTimeline({ config }: { config: StormConfig }) {
           marginBottom: "0.5rem",
         }}
       >
-        FIRTINA ZAMAN ÇİZELGESİ — {config.level} SENARYOSİ
+        FIRTINA ZAMAN ÇİZELGESİ — {config.level} SENARYOSU
       </div>
       <div
         style={{
