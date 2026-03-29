@@ -130,8 +130,8 @@ function StarField() {
 ───────────────────────────────────────────────────────────── */
 const NAV_ITEMS = [
   { label: "Panel",        href: "#dashboard" },
-  { label: "CME Olayları", href: "#" },
-  { label: "GST Uyarıları",href: "#" },
+  { label: "CME Olayları", href: "#cme" },
+  { label: "GST Uyarıları",href: "#gst" },
   { label: "Hakkında",    href: "#info" },
 ] as const;
 
@@ -407,7 +407,7 @@ function StatusDashboard({ gstList, cmeList }: { gstList: GST[]; cmeList: CME[] 
 function CmeTable({ cmeList }: { cmeList: CME[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
-    <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
+    <section id="cme" style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
         🌪️ KORONEL KÜTLE FIRLATMA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
@@ -510,7 +510,7 @@ function InfoChip({ label, value, danger }: { label: string; value: string; dang
 ───────────────────────────────────────────────────────────── */
 function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string | null }) {
   return (
-    <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
+    <section id="gst" style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
         🧲 JEOMANYETİK FIRTINA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
