@@ -452,10 +452,112 @@ body {
     padding: 80px 1.25rem 2rem;
   }
 }
+
 @media (max-width: 900px) {
   .sim-layout {
     grid-template-columns: 1fr;
     padding: 76px 1rem 2rem;
+    gap: 1.5rem;
+    min-height: auto;
+  }
+
+  /* Sol panel: sticky kaldır, yatay buton scroll */
+  .sim-panel {
+    position: static !important;
+  }
+
+  /* Storm butonlarını yatay yapma (mobilde) */
+  .sim-layout > div:first-child .sim-panel {
+    padding: 1rem;
+  }
+  .sim-layout > div:first-child .sim-panel > div:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  .sim-layout > div:first-child .sim-panel > div:nth-child(2)::-webkit-scrollbar {
+    display: none;
+  }
+
+  .storm-btn {
+    min-width: 120px;
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Orta panel: model boyutu küçült */
+  .sim-layout > div:nth-child(2) {
+    order: -1;
+  }
+
+  /* Timeline: daha kompakt */
+  .timeline-track {
+    padding: 0.75rem 0 0.25rem;
+  }
+  .timeline-step {
+    min-width: 80px;
+  }
+  .timeline-dot {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  .timeline-step::before {
+    top: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sim-layout {
+    padding: 72px 0.75rem 1.5rem;
+    gap: 1rem;
+  }
+
+  .storm-btn {
+    min-width: 100px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .sim-panel {
+    border-radius: 12px;
+    padding: 1rem !important;
+  }
+
+  /* Toggle daha büyük dokunma alanı */
+  .perspective-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  /* Timeline: daha küçük */
+  .timeline-step {
+    min-width: 70px;
+  }
+  .timeline-dot {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+  .timeline-step::before {
+    top: 14px;
+  }
+
+  /* Pulse rings küçült */
+  .pulse-ring {
+    inset: -5%;
+  }
+
+  /* Badge text küçüksün */
+  .sim-badge-text {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.04em !important;
+    padding: 0.4rem 0.9rem !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -485,4 +587,45 @@ body {
   height: 2px;
   background: var(--storm-color, #FF6B35);
   animation: scanline 3s linear infinite;
+}
+
+/* Perspective toggle */
+.perspective-toggle {
+  display: inline-flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,107,53,0.2);
+  background: rgba(8,20,45,0.85);
+  backdrop-filter: blur(12px);
+}
+.perspective-btn {
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: #8B9AC0;
+  font-family: var(--font-heading, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.perspective-btn.active {
+  background: rgba(255,107,53,0.15);
+  color: #FF6B35;
+  box-shadow: inset 0 0 12px rgba(255,107,53,0.1);
+}
+.perspective-btn:not(.active):hover {
+  background: rgba(255,107,53,0.06);
+  color: #E8EAF0;
+}
+
+/* Earth-specific badge style */
+.badge-earth {
+  border-color: rgba(68,136,255,0.5) !important;
+  background: rgba(68,136,255,0.1) !important;
+  color: #88CCFF !important;
 }

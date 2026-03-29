@@ -5,6 +5,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 const SunCanvas = dynamic(() => import("@/components/SunCanvas"), { ssr: false });
+const EarthCanvas = dynamic(() => import("@/components/EarthCanvas"), { ssr: false });
+
+type ViewMode = "sun" | "earth";
 
 /* ─────────────────────────────────────────────────────────────
    STORM LEVEL DATA
@@ -444,16 +447,41 @@ function StormSelector({
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SUN CENTER (Orta panel)
+   PERSPECTIVE TOGGLE
 ───────────────────────────────────────────────────────────── */
-function SimulationSun({ config }: { config: StormConfig }) {
+function PerspectiveToggle({ viewMode, onToggle }: { viewMode: ViewMode; onToggle: (m: ViewMode) => void }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+      <div className="perspective-toggle">
+        <button
+          className={`perspective-btn${viewMode === "sun" ? " active" : ""}`}
+          onClick={() => onToggle("sun")}
+          id="toggle-sun"
+        >
+          ☀️ Güneş
+        </button>
+        <button
+          className={`perspective-btn${viewMode === "earth" ? " active" : ""}`}
+          onClick={() => onToggle("earth")}
+          id="toggle-earth"
+        >
+          🌍 Dünya
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SIMULATION VIEW (Orta panel — Güneş veya Dünya)
+───────────────────────────────────────────────────────────── */
+function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; viewMode: ViewMode; onToggle: (m: ViewMode) => void }) {
   const [particles, setParticles] = useState<
     { id: number; x: number; y: number; delay: number; dur: number }[]
   >([]);
 
   useEffect(() => {
-    // G3 ve üzeri için parçacıklar
-    if (config.kp >= 7) {
+    if (viewMode === "sun" && config.kp >= 7) {
       setParticles(
         Array.from({ length: 8 }, (_, i) => ({
           id: i,
@@ -466,10 +494,14 @@ function SimulationSun({ config }: { config: StormConfig }) {
     } else {
       setParticles([]);
     }
-  }, [config.kp]);
+  }, [config.kp, viewMode]);
 
   const ringCount = config.level === "G5" ? 3 : config.level === "G4" ? 2 : 1;
   const showScanline = config.kp >= 8;
+  const isSun = viewMode === "sun";
+
+  // Dünya modu için manyetopoz mesafesi
+  const magnetopauseRe = isSun ? 0 : Math.max(4, 12 - config.kp * 0.8);
 
   return (
     <div
@@ -482,6 +514,9 @@ function SimulationSun({ config }: { config: StormConfig }) {
         gap: "1rem",
       }}
     >
+      {/* Toggle */}
+      <PerspectiveToggle viewMode={viewMode} onToggle={onToggle} />
+
       {/* Title */}
       <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
         <div
@@ -491,11 +526,13 @@ function SimulationSun({ config }: { config: StormConfig }) {
           {config.level} — {config.label.toUpperCase()} FIRTINASI
         </div>
         <div style={{ color: "#8B9AC0", fontSize: "0.8rem", marginTop: "0.3rem" }}>
-          {config.description.split(".")[0]}.
+          {isSun
+            ? `${config.description.split(".")[0]}.`
+            : `Manyetopoz ~${magnetopauseRe.toFixed(1)} Re mesafesine sıkışır. Aurora ${config.auroraLat} enlemine yayılır.`}
         </div>
       </div>
 
-      {/* Sun wrapper */}
+      {/* 3D Model wrapper */}
       <div
         style={{
           position: "relative",
@@ -503,60 +540,67 @@ function SimulationSun({ config }: { config: StormConfig }) {
           height: "clamp(280px, 40vw, 560px)",
         }}
       >
-        {/* Pulse rings */}
-        {Array.from({ length: ringCount }, (_, i) => (
-          <div
-            key={i}
-            className="pulse-ring"
-            style={
-              {
-                "--storm-color": config.color,
-                animationDelay: `${i * 0.7}s`,
-              } as React.CSSProperties
-            }
-          />
-        ))}
+        {isSun && (
+          <>
+            {/* Pulse rings — sadece güneş modunda */}
+            {Array.from({ length: ringCount }, (_, i) => (
+              <div
+                key={i}
+                className="pulse-ring"
+                style={
+                  {
+                    "--storm-color": config.color,
+                    animationDelay: `${i * 0.7}s`,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
 
-        {/* Floating particles for high severity */}
-        {particles.map((p) => (
-          <div
-            key={p.id}
-            className="storm-particle"
-            style={
-              {
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                animationDelay: `${p.delay}s`,
-                animationDuration: `${p.dur}s`,
-                "--storm-color": config.color,
-              } as React.CSSProperties
-            }
-          />
-        ))}
+            {/* Floating particles */}
+            {particles.map((p) => (
+              <div
+                key={p.id}
+                className="storm-particle"
+                style={
+                  {
+                    left: `${p.x}%`,
+                    top: `${p.y}%`,
+                    animationDelay: `${p.delay}s`,
+                    animationDuration: `${p.dur}s`,
+                    "--storm-color": config.color,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
 
-        {/* Scanline for G4-G5 */}
-        {showScanline && (
-          <div
-            className="scanline-overlay"
-            style={{ "--storm-color": config.color } as React.CSSProperties}
-          />
+            {/* Scanline for G4-G5 */}
+            {showScanline && (
+              <div
+                className="scanline-overlay"
+                style={{ "--storm-color": config.color } as React.CSSProperties}
+              />
+            )}
+          </>
         )}
 
-        {/* 3D Sun */}
+        {/* 3D Canvas */}
         <div
           style={{
             width: "100%",
             height: "100%",
-            filter: `drop-shadow(0 0 ${40 + config.kp * 8}px rgba(${config.colorRgb},${0.3 + config.kp * 0.04}))`,
+            filter: isSun
+              ? `drop-shadow(0 0 ${40 + config.kp * 8}px rgba(${config.colorRgb},${0.3 + config.kp * 0.04}))`
+              : `drop-shadow(0 0 30px rgba(68,136,255,0.25))`,
             transition: "filter 1.2s ease",
           }}
         >
-          <SunCanvas kpIndex={config.kp} />
+          {isSun ? <SunCanvas kpIndex={config.kp} /> : <EarthCanvas kpIndex={config.kp} />}
         </div>
       </div>
 
       {/* Severity badge */}
       <div
+        className={isSun ? "" : "badge-earth"}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -577,12 +621,14 @@ function SimulationSun({ config }: { config: StormConfig }) {
             width: 7,
             height: 7,
             borderRadius: "50%",
-            background: config.color,
+            background: isSun ? config.color : "#88CCFF",
             animation: "blink 1s ease infinite",
             display: "inline-block",
           }}
         />
-        CME HIZI ~{config.cmeSpeed.toLocaleString("tr-TR")} km/s · AURORA {config.auroraLat}
+        {isSun
+          ? `CME HIZI ~${config.cmeSpeed.toLocaleString("tr-TR")} km/s · AURORA ${config.auroraLat}`
+          : `MANYETOPOZ ~${magnetopauseRe.toFixed(1)} Re · AURORA ${config.auroraLat}`}
       </div>
     </div>
   );
@@ -893,6 +939,7 @@ function ComparisonTable({ selected }: { selected: StormLevel }) {
 ───────────────────────────────────────────────────────────── */
 export default function SimulasyonPage() {
   const [selectedLevel, setSelectedLevel] = useState<StormLevel>("G1");
+  const [viewMode, setViewMode] = useState<ViewMode>("sun");
   const config = STORM_CONFIGS.find((c) => c.level === selectedLevel)!;
 
   return (
@@ -908,9 +955,9 @@ export default function SimulasyonPage() {
             <StormSelector selected={selectedLevel} onSelect={setSelectedLevel} />
           </div>
 
-          {/* ORTA: Güneş + zaman çizelgesi + karşılaştırma */}
+          {/* ORTA: Güneş/Dünya + zaman çizelgesi + karşılaştırma */}
           <div>
-            <SimulationSun config={config} />
+            <SimulationView config={config} viewMode={viewMode} onToggle={setViewMode} />
             <StormTimeline config={config} />
             <ComparisonTable selected={selectedLevel} />
           </div>
