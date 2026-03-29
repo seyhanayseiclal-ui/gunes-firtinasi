@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const SunCanvas = dynamic(() => import("@/components/SunCanvas"), { ssr: false });
 
@@ -127,7 +128,14 @@ function StarField() {
 /* ─────────────────────────────────────────────────────────────
    NAVBAR
 ───────────────────────────────────────────────────────────── */
-const NAV_ITEMS = ["Panel", "CME Olayları", "GST Uyarıları", "Hakkında"] as const;
+const NAV_ITEMS = [
+  { label: "Panel",        href: "#dashboard" },
+  { label: "CME Olayları", href: "#" },
+  { label: "GST Uyarıları",href: "#" },
+  { label: "Hakkında",    href: "#info" },
+] as const;
+
+const NAV_SIM = { label: "Simülasyon", href: "/simulasyon" } as const;
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -175,11 +183,23 @@ function Navbar() {
         {/* Desktop links */}
         <div className="nav-links">
           {NAV_ITEMS.map(item => (
-            <a key={item} href="#" style={{ color: "#8B9AC0", fontSize: "0.85rem", letterSpacing: "0.05em", textDecoration: "none", transition: "color 0.2s" }}
+            <a key={item.label} href={item.href} style={{ color: "#8B9AC0", fontSize: "0.85rem", letterSpacing: "0.05em", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={e => (e.currentTarget.style.color = "#FF6B35")}
               onMouseLeave={e => (e.currentTarget.style.color = "#8B9AC0")}
-            >{item}</a>
+            >{item.label}</a>
           ))}
+          <Link href={NAV_SIM.href} style={{
+            padding: "0.35rem 0.9rem", borderRadius: "6px",
+            border: "1px solid rgba(255,107,53,0.4)",
+            background: "rgba(255,107,53,0.1)",
+            color: "#FF6B35", fontSize: "0.75rem",
+            fontFamily: "var(--font-heading)", fontWeight: 700,
+            letterSpacing: "0.08em", textDecoration: "none",
+            transition: "all 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,107,53,0.2)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,107,53,0.1)"; }}
+          >🌞 SİMÜLASYON</Link>
         </div>
 
         {/* Hamburger button */}
@@ -199,13 +219,20 @@ function Navbar() {
       <div className={`mobile-menu${menuOpen ? " open" : ""}`} role="navigation" aria-label="Mobil navigasyon">
         {NAV_ITEMS.map(item => (
           <a
-            key={item}
-            href="#"
+            key={item.label}
+            href={item.href}
             onClick={() => setMenuOpen(false)}
           >
-            {item}
+            {item.label}
           </a>
         ))}
+        <Link
+          href={NAV_SIM.href}
+          onClick={() => setMenuOpen(false)}
+          style={{ color: "#FF6B35", fontWeight: 700 }}
+        >
+          🌞 Simülasyon
+        </Link>
       </div>
     </>
   );
