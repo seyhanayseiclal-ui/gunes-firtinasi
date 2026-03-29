@@ -125,3 +125,77 @@ body {
 .kp-g3 { color: #FF6B35; border-color: rgba(255,107,53,0.4); background: rgba(255,107,53,0.08); }
 .kp-g4 { color: #FF4500; border-color: rgba(255,69,0,0.4); background: rgba(255,69,0,0.08); }
 .kp-g5 { color: #FF2D55; border-color: rgba(255,45,85,0.4); background: rgba(255,45,85,0.08); }
+
+/* ─── HERO RESPONSIVE ──────────────────────────────── */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 0 5rem;
+  padding-top: 64px;
+  position: relative;
+  z-index: 1;
+}
+.hero-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  flex-wrap: nowrap;
+}
+.hero-text {
+  flex: 1 1 480px;
+}
+.hero-sun {
+  flex: 0 0 auto;
+  width: clamp(300px, 43vw, 760px);
+  height: clamp(300px, 43vw, 760px);
+}
+
+@media (max-width: 900px) {
+  .hero-section {
+    padding: 0 1.5rem;
+    padding-top: 80px;
+    padding-bottom: 3rem;
+    min-height: auto;
+    align-items: flex-start;
+  }
+  .hero-inner {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+  .hero-text {
+    flex: unset;
+    width: 100%;
+    text-align: center;
+  }
+  .hero-text h1 {
+    font-size: clamp(1.8rem, 7vw, 2.6rem) !important;
+  }
+  .hero-text p {
+    max-width: 100% !important;
+  }
+  .hero-text > div:last-child {
+    justify-content: center;
+  }
+  .hero-sun {
+    width: clamp(260px, 82vw, 480px);
+    height: clamp(260px, 82vw, 480px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 0 1rem;
+    padding-top: 72px;
+    padding-bottom: 2rem;
+  }
+  .hero-sun {
+    width: clamp(220px, 88vw, 360px);
+    height: clamp(220px, 88vw, 360px);
+  }
+}

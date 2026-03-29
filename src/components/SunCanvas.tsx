@@ -35,43 +35,56 @@ function RotatingSun({ kpIndex }: { kpIndex: number }) {
     return { scaledScene: cloned };
   }, [scene]);
 
-  // Kp'ye göre emission rengi — fiziksel güneş renk sıcaklığına göre ayarlandı
-  // Sakin güneş: ~5500K fotosfer (sıcak sarı-beyaz)
-  // Orta aktivite: artan manyetik enerji → koyu turuncu
-  // Şiddetli fırtına: CME / koronal materyalin kırmızımsi parlaması
+  // Kp'ye göre agresif renk değişimi
+  // Sakin (0-2): açık sarı-beyaz → Orta (3-4): turuncu → G1-G2 (5-6): koyu turuncu
+  // G3 (7): kırmızı-turuncu → G4-G5 (8+): derin kırmızı/mor-kırmızı
   const { emissiveColor, emissiveIntensity } = useMemo(() => {
-    if (kpIndex >= 8) {
-      // G4-G5: Son derece şiddetli fırtına — kırmızı-turuncu koronal parıltı
+    if (kpIndex >= 9) {
+      // G5 Ekstrem — mor-kırmızı, neredeyse yanıyor
       return {
-        emissiveColor: new THREE.Color().setHSL(0.045, 1.0, 0.38), // derin turuncu-kırmızı
-        emissiveIntensity: 1.8,
+        emissiveColor: new THREE.Color().setHSL(0.0, 1.0, 0.18),  // tam kırmızı, çok koyu
+        emissiveIntensity: 5.0,
+      };
+    }
+    if (kpIndex >= 8) {
+      // G4 — derin kırmızı
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.02, 1.0, 0.20),
+        emissiveIntensity: 4.0,
       };
     }
     if (kpIndex >= 7) {
-      // G3: Güçlü fırtına — sıcak turuncu
+      // G3 — parlak kırmızı-turuncu
       return {
-        emissiveColor: new THREE.Color().setHSL(0.065, 1.0, 0.42),
-        emissiveIntensity: 1.4,
+        emissiveColor: new THREE.Color().setHSL(0.04, 1.0, 0.22),
+        emissiveIntensity: 3.0,
+      };
+    }
+    if (kpIndex >= 6) {
+      // G2 — yakıcı turuncu
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.07, 1.0, 0.25),
+        emissiveIntensity: 2.2,
       };
     }
     if (kpIndex >= 5) {
-      // G1-G2: Orta fırtına — altın-turuncu
+      // G1 — koyu altın-turuncu
       return {
-        emissiveColor: new THREE.Color().setHSL(0.09, 0.95, 0.48),
-        emissiveIntensity: 1.0,
+        emissiveColor: new THREE.Color().setHSL(0.09, 1.0, 0.28),
+        emissiveIntensity: 1.6,
       };
     }
     if (kpIndex >= 3) {
       // Hafif aktivite — sıcak sarı
       return {
-        emissiveColor: new THREE.Color().setHSL(0.12, 0.90, 0.52),
-        emissiveIntensity: 0.75,
+        emissiveColor: new THREE.Color().setHSL(0.12, 0.95, 0.32),
+        emissiveIntensity: 1.0,
       };
     }
-    // Sakin güneş — fotosfer sarı-beyazı (~5500K)
+    // Sakin güneş — sarı-beyaz fotosfer
     return {
-      emissiveColor: new THREE.Color().setHSL(0.14, 0.80, 0.60),
-      emissiveIntensity: 0.55,
+      emissiveColor: new THREE.Color().setHSL(0.17, 0.85, 0.40),
+      emissiveIntensity: 0.4,
     };
   }, [kpIndex]);
 
@@ -186,6 +199,36 @@ function CameraSetup() {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Kp'ye göre sahne ışık rengi
+───────────────────────────────────────────────────────────── */
+function SceneLights({ kpIndex }: { kpIndex: number }) {
+  const pointColor = useMemo(() => {
+    if (kpIndex >= 8) return "#FF1100";   // kırmızı
+    if (kpIndex >= 7) return "#FF3800";   // kırmızı-turuncu
+    if (kpIndex >= 6) return "#FF6000";   // yakıcı turuncu
+    if (kpIndex >= 5) return "#FF8C00";   // koyu turuncu
+    if (kpIndex >= 3) return "#FFB300";   // altın sarısı
+    return "#FFF5C0";                     // sıcak beyaz
+  }, [kpIndex]);
+
+  const pointIntensity = useMemo(() => {
+    if (kpIndex >= 8) return 3.5;
+    if (kpIndex >= 7) return 2.8;
+    if (kpIndex >= 5) return 2.0;
+    if (kpIndex >= 3) return 1.4;
+    return 0.9;
+  }, [kpIndex]);
+
+  return (
+    <>
+      <ambientLight intensity={kpIndex >= 7 ? 0.05 : 0.15} />
+      <pointLight position={[10, 10, 10]} intensity={pointIntensity} color={pointColor} />
+      <pointLight position={[-8, -6, 8]} intensity={pointIntensity * 0.4} color={pointColor} />
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
    EXPORT
 ───────────────────────────────────────────────────────────── */
 export default function SunCanvas({ kpIndex }: { kpIndex: number }) {
@@ -196,8 +239,7 @@ export default function SunCanvas({ kpIndex }: { kpIndex: number }) {
       dpr={[1, 2]}
     >
       <CameraSetup />
-      <ambientLight intensity={0.2} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} color="#FFF5E0" />
+      <SceneLights kpIndex={kpIndex} />
 
       <Suspense fallback={null}>
         <RotatingSun kpIndex={kpIndex} />

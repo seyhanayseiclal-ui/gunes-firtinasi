@@ -169,14 +169,10 @@ function Navbar() {
 function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number }) {
   const { label, g } = kpLevel(latestKp);
   return (
-    <section style={{
-      minHeight: "100vh", display: "flex", alignItems: "center",
-      padding: "0 5rem", paddingTop: "64px",
-      position: "relative", zIndex: 1
-    }}>
-      <div style={{ maxWidth: "1600px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4rem", flexWrap: "nowrap" }}>
+    <section className="hero-section">
+      <div className="hero-inner">
         {/* Text side */}
-        <div style={{ flex: "1 1 480px" }} className="fade-up">
+        <div className="hero-text fade-up">
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
             <span className="live-dot" />
             <span style={{ fontSize: "0.75rem", letterSpacing: "0.15em", color: "#FF2D55", fontFamily: "var(--font-heading)", fontWeight: 600 }}>
@@ -233,13 +229,13 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
         </div>
 
         {/* Sun animation — Three.js */}
-        <div style={{
-          flex: "0 0 auto",
-          width: "clamp(300px, 43vw, 760px)",
-          height: "clamp(300px, 43vw, 760px)",
-          filter: `drop-shadow(0 0 ${60 + kpIndex * 6}px rgba(255,${kpIndex >= 7 ? 45 : kpIndex >= 5 ? 107 : 179},${kpIndex >= 7 ? 85 : 53},${0.35 + kpIndex * 0.03}))`,
-          transition: "filter 1s ease",
-        }}>
+        <div
+          className="hero-sun"
+          style={{
+            filter: `drop-shadow(0 0 ${60 + kpIndex * 6}px rgba(255,${kpIndex >= 7 ? 45 : kpIndex >= 5 ? 107 : 179},${kpIndex >= 7 ? 85 : 53},${0.35 + kpIndex * 0.03}))`,
+            transition: "filter 1s ease",
+          }}
+        >
           <SunCanvas kpIndex={kpIndex} />
         </div>
       </div>
