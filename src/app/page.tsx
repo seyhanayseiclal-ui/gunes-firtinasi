@@ -90,14 +90,20 @@ function fmtDate(iso: string) {
    STAR BACKGROUND
 ───────────────────────────────────────────────────────────── */
 function StarField() {
-  const stars = Array.from({ length: 120 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    r: Math.random() * 1.8 + 0.4,
-    dur: (Math.random() * 4 + 2).toFixed(1),
-    delay: (Math.random() * 5).toFixed(1),
-  }));
+  const [stars, setStars] = useState<{ id: number; x: number; y: number; r: number; dur: string; delay: string }[]>([]);
+
+  useEffect(() => {
+    const generatedStars = Array.from({ length: 120 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      r: Math.random() * 1.8 + 0.4,
+      dur: (Math.random() * 4 + 2).toFixed(1),
+      delay: (Math.random() * 5).toFixed(1),
+    }));
+    setStars(generatedStars);
+  }, []);
+
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
