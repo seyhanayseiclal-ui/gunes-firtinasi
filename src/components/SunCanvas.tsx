@@ -1,282 +1,178 @@
 "use client";
 
-import { useRef, useMemo, Suspense } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useMemo, Suspense, useRef, useCallback } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 /* ─────────────────────────────────────────────────────────────
-   CORONA HALO SHADER — Rim lighting efekti
+   NASA GLB MODELİ — kendi ekseni etrafında döner, sürüklenebilir
 ───────────────────────────────────────────────────────────── */
-const coronaVertexShader = `
-  varying vec3 vNormal;
-  varying vec3 vViewPosition;
-  void main() {
-    vNormal = normalize(normalMatrix * normal);
-    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-    vViewPosition = -mvPos.xyz;
-    gl_Position = projectionMatrix * mvPos;
-  }
-`;
-
-const coronaFragmentShader = `
-  uniform float uOpacity;
-  uniform vec3 uColor;
-  varying vec3 vNormal;
-  varying vec3 vViewPosition;
-  void main() {
-    float rim = 1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition)));
-    rim = pow(rim, 2.2);
-    gl_FragColor = vec4(uColor, rim * uOpacity);
-  }
-`;
-
-/* ─────────────────────────────────────────────────────────────
-   SOLAR FLARE PARTİKÜLLERİ
-───────────────────────────────────────────────────────────── */
-function SolarFlares({ kpIndex, radius }: { kpIndex: number; radius: number }) {
-  const pointsRef = useRef<THREE.Points>(null!);
-
-  const { positions, velocities } = useMemo(() => {
-    const count = 400;
-    const pos = new Float32Array(count * 3);
-    const vel = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = radius * (1.0 + Math.random() * 0.05);
-      pos[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
-      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = r * Math.cos(phi);
-      const speed = 0.003 + Math.random() * 0.007;
-      vel[i * 3]     = pos[i * 3] * speed / r;
-      vel[i * 3 + 1] = pos[i * 3 + 1] * speed / r;
-      vel[i * 3 + 2] = pos[i * 3 + 2] * speed / r;
-    }
-    return { positions: pos, velocities: vel };
-  }, [radius]);
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(positions.slice(), 3));
-    return geo;
-  }, [positions]);
-
-  const flareColor = useMemo(() => {
-    if (kpIndex >= 7) return new THREE.Color("#FF2D55");
-    if (kpIndex >= 6) return new THREE.Color("#FF6B35");
-    if (kpIndex >= 5) return new THREE.Color("#FFB347");
-    return new THREE.Color("#FFE066");
-  }, [kpIndex]);
-
-  const maxDist = radius * 2.4;
-
-  useFrame(() => {
-    if (!pointsRef.current) return;
-    const posAttr = pointsRef.current.geometry.attributes.position;
-    const arr = posAttr.array as Float32Array;
-    for (let i = 0; i < arr.length / 3; i++) {
-      const ix = i * 3;
-      const dist = Math.sqrt(arr[ix] ** 2 + arr[ix + 1] ** 2 + arr[ix + 2] ** 2);
-      if (dist > maxDist) {
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
-        arr[ix]     = radius * Math.sin(phi) * Math.cos(theta);
-        arr[ix + 1] = radius * Math.sin(phi) * Math.sin(theta);
-        arr[ix + 2] = radius * Math.cos(phi);
-        const speed = 0.003 + Math.random() * 0.007;
-        velocities[ix]     = arr[ix] * speed / radius;
-        velocities[ix + 1] = arr[ix + 1] * speed / radius;
-        velocities[ix + 2] = arr[ix + 2] * speed / radius;
-      } else {
-        arr[ix]     += velocities[ix];
-        arr[ix + 1] += velocities[ix + 1];
-        arr[ix + 2] += velocities[ix + 2];
-      }
-    }
-    posAttr.needsUpdate = true;
-  });
-
-  return (
-    <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial
-        color={flareColor}
-        size={0.018 * radius}
-        sizeAttenuation
-        transparent
-        opacity={0.9}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   CORONA KATMANLARI
-───────────────────────────────────────────────────────────── */
-function CoronaLayer({
-  radius,
-  scale,
-  opacity,
-  color,
-}: {
-  radius: number;
-  scale: number;
-  opacity: number;
-  color: string;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const uniforms = useMemo(
-    () => ({
-      uOpacity: { value: opacity },
-      uColor: { value: new THREE.Color(color) },
-    }),
-    [opacity, color]
-  );
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      const t = clock.getElapsedTime();
-      (meshRef.current.material as THREE.ShaderMaterial).uniforms.uOpacity.value =
-        opacity * (0.7 + Math.sin(t * 0.7) * 0.3);
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} scale={radius * scale}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <shaderMaterial
-        vertexShader={coronaVertexShader}
-        fragmentShader={coronaFragmentShader}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        side={THREE.BackSide}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   NASA GLB MODELİ
-───────────────────────────────────────────────────────────── */
-function NasaSun({ kpIndex }: { kpIndex: number }) {
-  const groupRef = useRef<THREE.Group>(null!);
+function RotatingSun({ kpIndex }: { kpIndex: number }) {
   const { scene } = useGLTF("/sun.glb");
+  const groupRef = useRef<THREE.Group>(null!);
 
-  // NASA modelinin bounding box'ını ölçerek gerçek yarıçapı bul
-  const { scaledScene, radius } = useMemo(() => {
+  // Sürükleme durumu için ref (pointer arasında state kaybolmasın)
+  const dragState = useRef({
+    isDragging: false,
+    lastX: 0,
+    lastY: 0,
+    velocityX: 0,
+    velocityY: 0,
+  });
+
+  // NASA modelinin ölçeğini yeniden hesapla
+  const { scaledScene } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(scene);
     const size = new THREE.Vector3();
     box.getSize(size);
     const rawRadius = Math.max(size.x, size.y, size.z) / 2;
-    // Ekrana sığacak şekilde normalize et (hedef yarıçap ~1.1 birim)
-    const targetRadius = 1.1;
+    const targetRadius = 8.8;
     const scaleFactor = targetRadius / (rawRadius || 1);
 
     const cloned = scene.clone();
     cloned.scale.setScalar(scaleFactor);
-    return { scaledScene: cloned, radius: targetRadius };
+    return { scaledScene: cloned };
   }, [scene]);
 
-  // Kp'ye göre emission rengi
-  const emissiveColor = useMemo(() => {
-    if (kpIndex >= 7) return new THREE.Color(0.4, 0.05, 0.0);
-    if (kpIndex >= 5) return new THREE.Color(0.35, 0.12, 0.0);
-    return new THREE.Color(0.3, 0.18, 0.0);
+  // Kp'ye göre emission rengi — fiziksel güneş renk sıcaklığına göre ayarlandı
+  // Sakin güneş: ~5500K fotosfer (sıcak sarı-beyaz)
+  // Orta aktivite: artan manyetik enerji → koyu turuncu
+  // Şiddetli fırtına: CME / koronal materyalin kırmızımsi parlaması
+  const { emissiveColor, emissiveIntensity } = useMemo(() => {
+    if (kpIndex >= 8) {
+      // G4-G5: Son derece şiddetli fırtına — kırmızı-turuncu koronal parıltı
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.045, 1.0, 0.38), // derin turuncu-kırmızı
+        emissiveIntensity: 1.8,
+      };
+    }
+    if (kpIndex >= 7) {
+      // G3: Güçlü fırtına — sıcak turuncu
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.065, 1.0, 0.42),
+        emissiveIntensity: 1.4,
+      };
+    }
+    if (kpIndex >= 5) {
+      // G1-G2: Orta fırtına — altın-turuncu
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.09, 0.95, 0.48),
+        emissiveIntensity: 1.0,
+      };
+    }
+    if (kpIndex >= 3) {
+      // Hafif aktivite — sıcak sarı
+      return {
+        emissiveColor: new THREE.Color().setHSL(0.12, 0.90, 0.52),
+        emissiveIntensity: 0.75,
+      };
+    }
+    // Sakin güneş — fotosfer sarı-beyazı (~5500K)
+    return {
+      emissiveColor: new THREE.Color().setHSL(0.14, 0.80, 0.60),
+      emissiveIntensity: 0.55,
+    };
   }, [kpIndex]);
 
-  // NASA modelinin mesh'lerine emission ekle
   useMemo(() => {
     scaledScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach((mat) => {
-            const m = mat as THREE.MeshStandardMaterial;
-            if (m.emissive !== undefined) {
-              m.emissive = emissiveColor;
-              m.emissiveIntensity = 0.6;
-            }
-          });
-        } else {
-          const m = mesh.material as THREE.MeshStandardMaterial;
-          if (m.emissive !== undefined) {
-            m.emissive = emissiveColor;
-            m.emissiveIntensity = 0.6;
+        const applyEmission = (mat: THREE.MeshStandardMaterial) => {
+          if (mat.emissive !== undefined) {
+            mat.emissive = emissiveColor;
+            mat.emissiveIntensity = emissiveIntensity;
           }
+        };
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((m) => applyEmission(m as THREE.MeshStandardMaterial));
+        } else {
+          applyEmission(mesh.material as THREE.MeshStandardMaterial);
         }
       }
     });
-  }, [scaledScene, emissiveColor]);
+  }, [scaledScene, emissiveColor, emissiveIntensity]);
 
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      const t = clock.getElapsedTime();
-      // Yavaş y-ekseni rotasyonu
-      groupRef.current.rotation.y = t * 0.04;
-      // Sahne hafif sallanma
-      groupRef.current.rotation.x = Math.sin(t * 0.18) * 0.03;
+  // Her frame'de döndür ve inertia uygula
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+
+    const ds = dragState.current;
+
+    if (!ds.isDragging) {
+      // Sabit otomatik dönüş (y ekseni)
+      groupRef.current.rotation.y += delta * 0.08;
+
+      // İnertia: sürükleme bırakıldıktan sonra yavaş dur
+      ds.velocityX *= 0.92;
+      ds.velocityY *= 0.92;
+      groupRef.current.rotation.y += ds.velocityX;
+      groupRef.current.rotation.x += ds.velocityY;
     }
   });
 
-  // Corona rengi Kp'ye göre
-  const coronaColor = kpIndex >= 7 ? "#FF3322" : kpIndex >= 5 ? "#FF7733" : "#FFB347";
+  const { gl } = useThree();
+
+  // Pointer / touch olaylarını canvas üzerinden dinle
+  const onPointerDown = useCallback(
+    (e: PointerEvent) => {
+      dragState.current.isDragging = true;
+      dragState.current.lastX = e.clientX;
+      dragState.current.lastY = e.clientY;
+      dragState.current.velocityX = 0;
+      dragState.current.velocityY = 0;
+      gl.domElement.setPointerCapture(e.pointerId);
+    },
+    [gl]
+  );
+
+  const onPointerMove = useCallback((e: PointerEvent) => {
+    if (!dragState.current.isDragging) return;
+    const dx = e.clientX - dragState.current.lastX;
+    const dy = e.clientY - dragState.current.lastY;
+
+    // Konuma göre grup'u döndür
+    if (groupRef.current) {
+      groupRef.current.rotation.y += dx * 0.005;
+      groupRef.current.rotation.x += dy * 0.005;
+    }
+
+    // İnertia için hız kaydet
+    dragState.current.velocityX = dx * 0.005;
+    dragState.current.velocityY = dy * 0.005;
+    dragState.current.lastX = e.clientX;
+    dragState.current.lastY = e.clientY;
+  }, []);
+
+  const onPointerUp = useCallback(
+    (e: PointerEvent) => {
+      dragState.current.isDragging = false;
+      gl.domElement.releasePointerCapture(e.pointerId);
+    },
+    [gl]
+  );
+
+  // Three.js canvas'ına event listener ekle / temizle
+  useMemo(() => {
+    const canvas = gl.domElement;
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointercancel", onPointerUp);
+    canvas.style.cursor = "grab";
+    return () => {
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [gl, onPointerDown, onPointerMove, onPointerUp]);
 
   return (
     <group ref={groupRef}>
-      {/* NASA'nın güneş modeli */}
       <primitive object={scaledScene} />
-
-      {/* Corona halo katmanları */}
-      <CoronaLayer radius={radius} scale={1.12} opacity={0.65} color={coronaColor} />
-      <CoronaLayer radius={radius} scale={1.32} opacity={0.32} color={coronaColor} />
-      <CoronaLayer radius={radius} scale={1.60} opacity={0.14} color="#FF9944" />
-      <CoronaLayer radius={radius} scale={2.10} opacity={0.06} color="#FF7700" />
-
-      {/* Solar flare partikülleri */}
-      <SolarFlares kpIndex={kpIndex} radius={radius} />
     </group>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   FALLBACK — GLB yüklenirken GLSL güneş göster
-───────────────────────────────────────────────────────────── */
-const fallbackVertexShader = `
-  varying vec3 vNormal;
-  void main() {
-    vNormal = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-const fallbackFragmentShader = `
-  uniform float uTime;
-  varying vec3 vNormal;
-  void main() {
-    float limb = pow(clamp(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 0.5);
-    vec3 col = mix(vec3(0.8, 0.1, 0.0), vec3(1.0, 0.88, 0.3), limb);
-    gl_FragColor = vec4(col * limb * 1.2, 1.0);
-  }
-`;
-function FallbackSun() {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
-  useFrame(({ clock }) => {
-    uniforms.uTime.value = clock.getElapsedTime();
-    if (meshRef.current) meshRef.current.rotation.y = clock.getElapsedTime() * 0.05;
-  });
-  return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1.1, 64, 64]} />
-      <shaderMaterial
-        vertexShader={fallbackVertexShader}
-        fragmentShader={fallbackFragmentShader}
-        uniforms={uniforms}
-      />
-    </mesh>
   );
 }
 
@@ -285,7 +181,7 @@ function FallbackSun() {
 ───────────────────────────────────────────────────────────── */
 function CameraSetup() {
   const { camera } = useThree();
-  camera.position.set(0, 0, 3.4);
+  camera.position.set(0, 0, 16);
   return null;
 }
 
@@ -301,9 +197,10 @@ export default function SunCanvas({ kpIndex }: { kpIndex: number }) {
     >
       <CameraSetup />
       <ambientLight intensity={0.2} />
-      <pointLight position={[5, 5, 5]} intensity={0.8} color="#FFF5E0" />
-      <Suspense fallback={<FallbackSun />}>
-        <NasaSun kpIndex={kpIndex} />
+      <pointLight position={[10, 10, 10]} intensity={0.8} color="#FFF5E0" />
+
+      <Suspense fallback={null}>
+        <RotatingSun kpIndex={kpIndex} />
       </Suspense>
     </Canvas>
   );

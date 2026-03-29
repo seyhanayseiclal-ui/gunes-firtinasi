@@ -174,7 +174,7 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
       padding: "0 2rem", paddingTop: "64px",
       position: "relative", zIndex: 1
     }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "3rem", flexWrap: "wrap" }}>
+      <div style={{ maxWidth: "1600px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "2rem", flexWrap: "nowrap" }}>
         {/* Text side */}
         <div style={{ flex: "1 1 480px" }} className="fade-up">
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
@@ -235,9 +235,9 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
         {/* Sun animation — Three.js */}
         <div style={{
           flex: "0 0 auto",
-          width: 380,
-          height: 380,
-          filter: `drop-shadow(0 0 ${40 + kpIndex * 4}px rgba(255,${kpIndex >= 7 ? 45 : kpIndex >= 5 ? 107 : 179},${kpIndex >= 7 ? 85 : 53},${0.35 + kpIndex * 0.03}))`,
+          width: "clamp(300px, 43vw, 760px)",
+          height: "clamp(300px, 43vw, 760px)",
+          filter: `drop-shadow(0 0 ${60 + kpIndex * 6}px rgba(255,${kpIndex >= 7 ? 45 : kpIndex >= 5 ? 107 : 179},${kpIndex >= 7 ? 85 : 53},${0.35 + kpIndex * 0.03}))`,
           transition: "filter 1s ease",
         }}>
           <SunCanvas kpIndex={kpIndex} />
