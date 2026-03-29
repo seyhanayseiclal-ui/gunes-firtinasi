@@ -523,7 +523,7 @@ function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; v
           className="font-heading gradient-solar"
           style={{ fontSize: "clamp(1.2rem,3vw,1.8rem)", fontWeight: 900, letterSpacing: "0.08em" }}
         >
-          {config.level} — {config.label.toLocaleUpperCase('tr-TR')} FIRTINASI
+          {config.level} — {config.label.toLocaleUpperCase('tr-TR')} FIRTINA
         </div>
         <div style={{ color: "#8B9AC0", fontSize: "0.8rem", marginTop: "0.3rem" }}>
           {isSun
