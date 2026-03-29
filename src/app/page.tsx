@@ -127,39 +127,87 @@ function StarField() {
 /* ─────────────────────────────────────────────────────────────
    NAVBAR
 ───────────────────────────────────────────────────────────── */
+const NAV_ITEMS = ["Panel", "CME Olayları", "GST Uyarıları", "Hakkında"] as const;
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close drawer on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("nav") && !target.closest(".mobile-menu")) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [menuOpen]);
+
   return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      padding: "0 2rem",
-      background: scrolled ? "rgba(2,8,24,0.95)" : "rgba(2,8,24,0.6)",
-      backdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(255,107,53,0.15)",
-      transition: "background 0.3s",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      height: "64px",
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-        <span style={{ fontSize: "1.5rem" }}>☀️</span>
-        <span className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FF6B35", letterSpacing: "0.05em" }}>
-          SolarWatch
-        </span>
-      </div>
-      <div style={{ display: "flex", gap: "2rem" }}>
-        {["Panel", "CME Olayları", "GST Uyarıları", "Hakkında"].map(item => (
-          <a key={item} href="#" style={{ color: "#8B9AC0", fontSize: "0.85rem", letterSpacing: "0.05em", textDecoration: "none", transition: "color 0.2s" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#FF6B35")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#8B9AC0")}
-          >{item}</a>
+    <>
+      <nav style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        padding: "0 2rem",
+        background: scrolled ? "rgba(2,8,24,0.95)" : "rgba(2,8,24,0.6)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,107,53,0.15)",
+        transition: "background 0.3s",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        height: "64px",
+      }}>
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <span style={{ fontSize: "1.5rem" }}>☀️</span>
+          <span className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FF6B35", letterSpacing: "0.05em" }}>
+            SolarWatch
+          </span>
+        </div>
+
+        {/* Desktop links */}
+        <div className="nav-links">
+          {NAV_ITEMS.map(item => (
+            <a key={item} href="#" style={{ color: "#8B9AC0", fontSize: "0.85rem", letterSpacing: "0.05em", textDecoration: "none", transition: "color 0.2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#FF6B35")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#8B9AC0")}
+            >{item}</a>
+          ))}
+        </div>
+
+        {/* Hamburger button */}
+        <button
+          className={`hamburger${menuOpen ? " open" : ""}`}
+          onClick={() => setMenuOpen(prev => !prev)}
+          aria-label="Menüyü aç/kapat"
+          aria-expanded={menuOpen}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </nav>
+
+      {/* Mobile drawer */}
+      <div className={`mobile-menu${menuOpen ? " open" : ""}`} role="navigation" aria-label="Mobil navigasyon">
+        {NAV_ITEMS.map(item => (
+          <a
+            key={item}
+            href="#"
+            onClick={() => setMenuOpen(false)}
+          >
+            {item}
+          </a>
         ))}
       </div>
-    </nav>
+    </>
   );
 }
 
