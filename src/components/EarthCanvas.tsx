@@ -236,7 +236,10 @@ function FlowParticles({ kpIndex }: { kpIndex: number }) {
     cIdx.current = new Int32Array(count);
     for (let i = 0; i < count; i++) {
       tVals.current[i] = Math.random();
-      cIdx.current[i] = Math.floor(Math.random() * curves.length);
+      // Fix 3: curves.length 0 ise NaN üretmemek için guard
+      cIdx.current[i] = curves.length > 0
+        ? Math.floor(Math.random() * curves.length)
+        : 0;
     }
   }, [count, curves]);
 
@@ -245,9 +248,18 @@ function FlowParticles({ kpIndex }: { kpIndex: number }) {
     const spd = 0.05 + kpIndex * 0.02;
     for (let i = 0; i < count; i++) {
       tVals.current[i] += dt * spd;
-      if (tVals.current[i] > 1) { tVals.current[i] = 0; cIdx.current[i] = Math.floor(Math.random() * curves.length); }
+      if (tVals.current[i] > 1) {
+        tVals.current[i] = 0;
+        // Fix 3: yeniden atamada da güvenli kontrol
+        cIdx.current[i] = curves.length > 0
+          ? Math.floor(Math.random() * curves.length)
+          : 0;
+      }
       const p = curves[cIdx.current[i]]?.getPointAt(Math.min(tVals.current[i], 0.999));
-      if (p) { pos[i * 3] = p.x; pos[i * 3 + 1] = p.y; pos[i * 3 + 2] = p.z; }
+      // Fix 2: NaN değerlerin geometry'ye yazılmasını önle
+      if (p && isFinite(p.x) && isFinite(p.y) && isFinite(p.z)) {
+        pos[i * 3] = p.x; pos[i * 3 + 1] = p.y; pos[i * 3 + 2] = p.z;
+      }
     }
     const a = pRef.current.geometry.getAttribute("position");
     (a as THREE.BufferAttribute).set(pos);
