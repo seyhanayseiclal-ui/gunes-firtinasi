@@ -2,7 +2,6 @@
 
 import { useMemo, Suspense, useRef, useCallback } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 const EARTH_R = 2.8;
@@ -32,20 +31,74 @@ function compressL(base: number, phi: number, kp: number) {
   return base * (1 + Math.abs(sf) * 0.12);
 }
 
-/* ─── ROTATING EARTH ──────────────────────────────────── */
+/* ─── ROTATING EARTH (procedural sphere) ──────────────── */
 function RotatingEarth() {
-  const { scene } = useGLTF("/earth.glb");
   const ref = useRef<THREE.Group>(null!);
   const drag = useRef({ on: false, lx: 0, ly: 0, vx: 0, vy: 0 });
 
-  const scaled = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(scene);
-    const sz = new THREE.Vector3(); box.getSize(sz);
-    const rr = Math.max(sz.x, sz.y, sz.z) / 2;
-    const c = scene.clone();
-    c.scale.setScalar(EARTH_R / (rr || 1));
-    return c;
-  }, [scene]);
+  // Basit kara/okyanus dokusu oluştur (canvas ile)
+  const earthTexture = useMemo(() => {
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+
+    // Okyanus gradyanı
+    const grad = ctx.createLinearGradient(0, 0, 0, size);
+    grad.addColorStop(0, "#1a3a5c");
+    grad.addColorStop(0.15, "#1e5799");
+    grad.addColorStop(0.5, "#2076b8");
+    grad.addColorStop(0.85, "#1e5799");
+    grad.addColorStop(1, "#1a3a5c");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+
+    // Kara kütleleri (seeded pseudo-random blobs)
+    const rng = (s: number) => { s = Math.sin(s * 127.1) * 43758.5453; return s - Math.floor(s); };
+    ctx.fillStyle = "#2d6b3f";
+    const landMasses = [
+      { x: 0.55, y: 0.3, w: 0.18, h: 0.25 },  // Avrupa-Afrika
+      { x: 0.75, y: 0.25, w: 0.22, h: 0.3 },   // Asya
+      { x: 0.18, y: 0.28, w: 0.15, h: 0.22 },   // Kuzey Amerika
+      { x: 0.22, y: 0.55, w: 0.1, h: 0.15 },    // Güney Amerika
+      { x: 0.82, y: 0.6, w: 0.12, h: 0.1 },     // Avustralya
+      { x: 0.5, y: 0.1, w: 0.3, h: 0.04 },      // Kuzey buz
+      { x: 0.4, y: 0.9, w: 0.4, h: 0.06 },      // Antarktika
+    ];
+    for (const lm of landMasses) {
+      ctx.beginPath();
+      const cx = lm.x * size, cy = lm.y * size;
+      const rx = lm.w * size / 2, ry = lm.h * size / 2;
+      // Organik şekil için birden fazla elips
+      for (let j = 0; j < 5; j++) {
+        const ox = (rng(j + cx) - 0.5) * rx * 0.6;
+        const oy = (rng(j + cy + 99) - 0.5) * ry * 0.6;
+        ctx.ellipse(cx + ox, cy + oy, rx * (0.5 + rng(j * 7) * 0.5), ry * (0.5 + rng(j * 13) * 0.5), rng(j) * Math.PI, 0, Math.PI * 2);
+      }
+      ctx.fill();
+    }
+
+    // Kutup buzulları
+    ctx.fillStyle = "rgba(220, 235, 245, 0.6)";
+    ctx.fillRect(0, 0, size, size * 0.06);
+    ctx.fillRect(0, size * 0.94, size, size * 0.06);
+
+    // Bulut benzeri beyaz lekeler
+    ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+    for (let i = 0; i < 30; i++) {
+      const bx = rng(i * 3.7) * size;
+      const by = rng(i * 5.1 + 100) * size;
+      const br = 10 + rng(i * 9.3) * 40;
+      ctx.beginPath();
+      ctx.ellipse(bx, by, br, br * 0.4, rng(i) * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    return tex;
+  }, []);
 
   useFrame((_, dt) => {
     if (!ref.current) return;
@@ -87,7 +140,41 @@ function RotatingEarth() {
     return () => { c.removeEventListener("pointerdown", down); c.removeEventListener("pointermove", move); c.removeEventListener("pointerup", up); c.removeEventListener("pointercancel", up); };
   }, [gl, down, move, up]);
 
-  return <group ref={ref}><primitive object={scaled} /></group>;
+  return (
+    <group ref={ref}>
+      {/* Dünya küresi */}
+      <mesh>
+        <sphereGeometry args={[EARTH_R, 64, 64]} />
+        <meshStandardMaterial
+          map={earthTexture}
+          roughness={0.8}
+          metalness={0.1}
+        />
+      </mesh>
+      {/* Atmosfer glow */}
+      <mesh>
+        <sphereGeometry args={[EARTH_R * 1.02, 48, 48]} />
+        <meshBasicMaterial
+          color="#4488FF"
+          transparent
+          opacity={0.08}
+          side={THREE.BackSide}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Dış atmosfer halo */}
+      <mesh>
+        <sphereGeometry args={[EARTH_R * 1.08, 32, 32]} />
+        <meshBasicMaterial
+          color="#6699FF"
+          transparent
+          opacity={0.04}
+          side={THREE.BackSide}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
 }
 
 /* ─── MAGNETIC FIELD LINES ────────────────────────────── */
@@ -259,7 +346,8 @@ function SolarWind({ kpIndex }: { kpIndex: number }) {
 /* ─── SCENE ───────────────────────────────────────────── */
 function CameraSetup() {
   const { camera } = useThree();
-  camera.position.set(0, 2, 16);
+  camera.position.set(0, 4, 32);
+  camera.lookAt(0, 0, 0);
   return null;
 }
 

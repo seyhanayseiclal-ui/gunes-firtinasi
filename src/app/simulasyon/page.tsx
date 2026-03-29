@@ -536,8 +536,8 @@ function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; v
       <div
         style={{
           position: "relative",
-          width: "clamp(280px, 40vw, 560px)",
-          height: "clamp(280px, 40vw, 560px)",
+          width: "clamp(240px, 40vw, 560px)",
+          height: "clamp(240px, 40vw, 560px)",
         }}
       >
         {isSun && (
@@ -600,7 +600,7 @@ function SimulationView({ config, viewMode, onToggle }: { config: StormConfig; v
 
       {/* Severity badge */}
       <div
-        className={isSun ? "" : "badge-earth"}
+        className={`sim-badge-text${isSun ? "" : " badge-earth"}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
