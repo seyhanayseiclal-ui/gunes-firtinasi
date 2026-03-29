@@ -15,7 +15,7 @@
 @theme inline {
   --color-background: #020818;
   --color-foreground: #E8EAF0;
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-jakarta);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -24,7 +24,7 @@ body {
   background-color: #020818;
   color: #E8EAF0;
   overflow-x: hidden;
-  font-family: var(--font-inter, Inter, sans-serif);
+  font-family: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif);
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #020818; }

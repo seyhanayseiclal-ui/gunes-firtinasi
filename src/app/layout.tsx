@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Orbitron, Inter } from "next/font/google";
+import { Orbitron, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const orbitron = Orbitron({
@@ -8,24 +8,25 @@ const orbitron = Orbitron({
   weight: ["400", "600", "700", "800", "900"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "SolarWatch — Solar Storm Early Warning System",
+  title: "SolarWatch — Güneş Fırtınası Erken Uyarı Sistemi",
   description:
-    "Real-time solar storm monitoring using NASA DONKI data. Track CME events, geomagnetic storms, and protect Earth from space weather.",
+    "NASA DONKI verileriyle gerçek zamanlı güneş fırtınası izleme. CME olaylarını ve jeomanyetik fırtınaları takip edin, uzay hava durumundan korunun.",
   keywords:
-    "solar storm, CME, geomagnetic storm, NASA DONKI, space weather, early warning system",
+    "güneş fırtınası, CME, jeomanyetik fırtına, NASA DONKI, uzay hava durumu, erken uyarı sistemi",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${inter.variable}`}>
+    <html lang="tr" className={`${orbitron.variable} ${jakarta.variable}`}>
       <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );

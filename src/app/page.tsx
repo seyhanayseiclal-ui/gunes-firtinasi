@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+
+const SunCanvas = dynamic(() => import("@/components/SunCanvas"), { ssr: false });
 
 /* ─────────────────────────────────────────────────────────────
    TYPES
@@ -65,11 +68,11 @@ function maxKp(gst: GST): number {
   return Math.max(...gst.allKpIndex.map(k => k.kpIndex));
 }
 function kpLevel(kp: number): { label: string; cls: string; g: string } {
-  if (kp >= 9) return { label: "Extreme", cls: "kp-g5", g: "G5" };
-  if (kp >= 8) return { label: "Severe", cls: "kp-g4", g: "G4" };
-  if (kp >= 7) return { label: "Strong", cls: "kp-g3", g: "G3" };
-  if (kp >= 6) return { label: "Moderate", cls: "kp-g2", g: "G2" };
-  return { label: "Minor", cls: "kp-g1", g: "G1" };
+  if (kp >= 9) return { label: "Şiddetli Ekstrem", cls: "kp-g5", g: "G5" };
+  if (kp >= 8) return { label: "Çok Şiddetli", cls: "kp-g4", g: "G4" };
+  if (kp >= 7) return { label: "Güçlü", cls: "kp-g3", g: "G3" };
+  if (kp >= 6) return { label: "Orta", cls: "kp-g2", g: "G2" };
+  return { label: "Hafif", cls: "kp-g1", g: "G1" };
 }
 function cmeSpeedColor(speed: number) {
   if (speed >= 800) return "#FF2D55";
@@ -79,11 +82,11 @@ function cmeSpeedColor(speed: number) {
 }
 function fmtDT(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }) + " UTC";
+  return d.toLocaleString("tr-TR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }) + " UTC";
 }
 function fmtDate(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+  return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -149,7 +152,7 @@ function Navbar() {
         </span>
       </div>
       <div style={{ display: "flex", gap: "2rem" }}>
-        {["Dashboard", "CME Events", "GST Alerts", "About"].map(item => (
+        {["Panel", "CME Olayları", "GST Uyarıları", "Hakkında"].map(item => (
           <a key={item} href="#" style={{ color: "#8B9AC0", fontSize: "0.85rem", letterSpacing: "0.05em", textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={e => (e.currentTarget.style.color = "#FF6B35")}
             onMouseLeave={e => (e.currentTarget.style.color = "#8B9AC0")}
@@ -163,7 +166,7 @@ function Navbar() {
 /* ─────────────────────────────────────────────────────────────
    HERO
 ───────────────────────────────────────────────────────────── */
-function HeroSection({ latestKp }: { latestKp: number }) {
+function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number }) {
   const { label, g } = kpLevel(latestKp);
   return (
     <section style={{
@@ -177,19 +180,19 @@ function HeroSection({ latestKp }: { latestKp: number }) {
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
             <span className="live-dot" />
             <span style={{ fontSize: "0.75rem", letterSpacing: "0.15em", color: "#FF2D55", fontFamily: "var(--font-orbitron)", fontWeight: 600 }}>
-              LIVE MONITORING
+              CANLI İZLEME
             </span>
           </div>
           <h1 className="font-orbitron" style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)", fontWeight: 900, lineHeight: 1.1, marginBottom: "1.25rem", letterSpacing: "0.02em" }}>
-            <span className="gradient-solar">SOLAR STORM</span>
+            <span className="gradient-solar">GÜNEŞ FIRTINASI</span>
             <br />
-            <span style={{ color: "#E8EAF0" }}>EARLY WARNING</span>
+            <span style={{ color: "#E8EAF0" }}>ERKEN UYARI</span>
             <br />
-            <span style={{ color: "#E8EAF0" }}>SYSTEM</span>
+            <span style={{ color: "#E8EAF0" }}>SİSTEMİ</span>
           </h1>
           <p style={{ color: "#8B9AC0", fontSize: "1rem", lineHeight: 1.7, maxWidth: "480px", marginBottom: "2rem" }}>
-            Real-time coronal mass ejection tracking and geomagnetic storm alerts powered by{" "}
-            <span style={{ color: "#FFB347" }}>NASA DONKI API</span>. Protect Earth — stay ahead of space weather.
+            Koronel kütle fırlatma (CME) takibi ve jeomanyetik fırtına uyarıları{" "}
+            <span style={{ color: "#FFB347" }}>NASA DONKI API</span> ile gerçek zamanlı sunulmaktadır. Dünya'yı koruyun — uzay havasının önünde kalın.
           </p>
           {/* Alert badge */}
           <div style={{
@@ -202,7 +205,7 @@ function HeroSection({ latestKp }: { latestKp: number }) {
             fontFamily: "var(--font-orbitron)", fontSize: "0.8rem", fontWeight: 700,
           }}>
             <span style={{ animation: "blink 1s ease infinite", display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "currentColor" }} />
-            CURRENT ALERT: {g} — {label.toUpperCase()} · Kp {latestKp.toFixed(2)}
+            GÜNCEL UYARI: {g} — {label.toUpperCase()} · Kp {latestKp.toFixed(2)}
           </div>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <a href="#dashboard" style={{
@@ -215,7 +218,7 @@ function HeroSection({ latestKp }: { latestKp: number }) {
             }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 0 30px rgba(255,107,53,0.6)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(255,107,53,0.4)"; }}
-            >VIEW LIVE DATA ↓</a>
+            >CANLI VERİYİ GÖR ↓</a>
             <a href="#info" style={{
               padding: "0.75rem 1.75rem", borderRadius: "8px",
               background: "transparent", border: "1px solid rgba(255,107,53,0.4)",
@@ -225,41 +228,19 @@ function HeroSection({ latestKp }: { latestKp: number }) {
             }}
               onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,107,53,0.1)"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-            >HOW IT WORKS</a>
+            >NASIL ÇALIŞIR</a>
           </div>
         </div>
 
-        {/* Sun animation */}
-        <div style={{ flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "center" }} className="hero-float">
-          <div style={{ position: "relative", width: 260, height: 260 }}>
-            {/* Outer glow rings */}
-            {[300, 260, 220].map((size, i) => (
-              <div key={i} style={{
-                position: "absolute",
-                top: "50%", left: "50%",
-                transform: "translate(-50%,-50%)",
-                width: size, height: size,
-                borderRadius: "50%",
-                border: `1px solid rgba(255,107,53,${0.08 - i * 0.02})`,
-                animation: `pulse-ring ${3 + i * 0.8}s ease-out infinite`,
-                animationDelay: `${i * 0.4}s`,
-              }} />
-            ))}
-            {/* Sun core */}
-            <div className="sun-glow" style={{
-              position: "absolute", top: "50%", left: "50%",
-              transform: "translate(-50%,-50%)",
-              width: 160, height: 160, borderRadius: "50%",
-              background: "radial-gradient(circle at 35% 35%, #FFE066 0%, #FFB347 35%, #FF6B35 65%, #CC3300 100%)",
-            }}>
-              {/* Corona spin ring */}
-              <div className="sun-spin" style={{
-                position: "absolute", inset: "-12px",
-                borderRadius: "50%",
-                border: "3px dashed rgba(255,179,71,0.25)",
-              }} />
-            </div>
-          </div>
+        {/* Sun animation — Three.js */}
+        <div style={{
+          flex: "0 0 auto",
+          width: 380,
+          height: 380,
+          filter: `drop-shadow(0 0 ${40 + kpIndex * 4}px rgba(255,${kpIndex >= 7 ? 45 : kpIndex >= 5 ? 107 : 179},${kpIndex >= 7 ? 85 : 53},${0.35 + kpIndex * 0.03}))`,
+          transition: "filter 1s ease",
+        }}>
+          <SunCanvas kpIndex={kpIndex} />
         </div>
       </div>
     </section>
@@ -298,38 +279,38 @@ function StatusDashboard({ gstList, cmeList }: { gstList: GST[]; cmeList: CME[] 
   const cards = [
     {
       icon: "🌡️",
-      title: "Geomagnetic Storm Level",
+      title: "Jeomanyetik Fırtına Seviyesi",
       main: `${g} — ${label}`,
-      sub: `Kp Index: ${kp.toFixed(2)}`,
+      sub: `Kp Endeksi: ${kp.toFixed(2)}`,
       color: kp >= 7 ? "#FF2D55" : kp >= 6 ? "#FF6B35" : "#FFB347",
-      detail: `${latest.allKpIndex.length} readings · NOAA`,
+      detail: `${latest.allKpIndex.length} ölçüm · NOAA`,
     },
     {
       icon: "☀️",
-      title: "Fastest CME Speed",
+      title: "En Hızlı CME Hızı",
       main: null,
       mainNum: topSpeed,
       mainSuffix: " km/s",
-      sub: `Activity ID: ${topCme?.activityID.slice(0, 19)}`,
+      sub: `Aktivite ID: ${topCme?.activityID.slice(0, 19)}`,
       color: cmeSpeedColor(topSpeed),
-      detail: `${cmeList.length} total CME events tracked`,
+      detail: `Toplam ${cmeList.length} CME olayı takip edildi`,
     },
     {
       icon: "🌍",
-      title: "Earth-Directed Impacts",
+      title: "Dünya'ya Yönelik Çarpmalar",
       main: null,
       mainNum: earthHits,
-      mainSuffix: " events",
-      sub: `Confirmed Earth-GB CMEs`,
+      mainSuffix: " olay",
+      sub: `Doğrulanmış Dünya-GB CME'leri`,
       color: earthHits > 0 ? "#FF2D55" : "#00D4A8",
-      detail: `From ${cmeList.length} total CME observations`,
+      detail: `Toplam ${cmeList.length} CME gözleminden`,
     },
   ];
 
   return (
     <section id="dashboard" style={{ padding: "5rem 2rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-orbitron" style={{ textAlign: "center", fontSize: "1.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "3rem" }}>
-        ⚡ REAL-TIME STATUS
+        ⚡ GERÇEK ZAMANLI DURUM
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
         {cards.map((c, i) => (
@@ -357,9 +338,9 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
   return (
     <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
-        🌪️ CORONAL MASS EJECTION EVENTS
+        🌪️ KORONEL KÜTLE FIRLATMA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
-          NASA M2M CATALOG · {cmeList.length} records
+          NASA M2M KATALOG · {cmeList.length} kayıt
         </span>
       </h2>
 
@@ -367,7 +348,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,107,53,0.2)" }}>
-              {["Activity ID", "Start Time", "Speed (km/s)", "Type", "Half Angle", "Instruments", "Earth-GB", ""].map(h => (
+              {["Aktivite ID", "Başlangıç Zamanı", "Hız (km/s)", "Tür", "Yarı Açı", "Aletler", "Dünya-GB", ""].map(h => (
                 <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8B9AC0", fontFamily: "var(--font-orbitron)", fontSize: "0.65rem", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{h.toUpperCase()}</th>
               ))}
             </tr>
@@ -406,7 +387,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
                   <td style={{ padding: "0.8rem 1rem", color: "#8B9AC0", fontSize: "0.72rem" }}>{cme.instruments.map(i => i.displayName.split(": ")[0]).join(", ")}</td>
                   <td style={{ padding: "0.8rem 1rem" }}>
                     <span style={{ color: earthGB ? "#FF2D55" : "#00D4A8", fontWeight: 700, fontSize: "0.7rem" }}>
-                      {earthGB ? "⚠ YES" : "NO"}
+                      {earthGB ? "⚠ EVET" : "HAYIR"}
                     </span>
                   </td>
                   <td style={{ padding: "0.8rem 1rem", color: "#8B9AC0" }}>{isOpen ? "▲" : "▼"}</td>
@@ -415,21 +396,21 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
                   <tr key={`${cme.activityID}-detail`}>
                     <td colSpan={8} style={{ padding: "0 1rem 1rem", background: "rgba(255,107,53,0.04)" }}>
                       <div style={{ padding: "1rem", borderRadius: "8px", border: "1px solid rgba(255,107,53,0.15)", marginTop: "0.25rem" }}>
-                        <p style={{ color: "#8B9AC0", fontSize: "0.8rem", lineHeight: 1.6, marginBottom: "1rem" }}><strong style={{ color: "#FFB347" }}>Note:</strong> {cme.note}</p>
+                        <p style={{ color: "#8B9AC0", fontSize: "0.8rem", lineHeight: 1.6, marginBottom: "1rem" }}><strong style={{ color: "#FFB347" }}>Not:</strong> {cme.note}</p>
                         <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
                           {best && (<>
-                            <InfoChip label="Latitude" value={best.latitude !== null ? `${best.latitude}°` : "—"} />
-                            <InfoChip label="Longitude" value={best.longitude !== null ? `${best.longitude}°` : "—"} />
-                            <InfoChip label="Technique" value={best.measurementTechnique} />
-                            <InfoChip label="Image Type" value={best.imageType} />
+                            <InfoChip label="Enlem" value={best.latitude !== null ? `${best.latitude}°` : "—"} />
+                            <InfoChip label="Boylam" value={best.longitude !== null ? `${best.longitude}°` : "—"} />
+                            <InfoChip label="Teknik" value={best.measurementTechnique} />
+                            <InfoChip label="Görüntü Türü" value={best.imageType} />
                           </>)}
-                          {cme.linkedEvents && <InfoChip label="Linked Events" value={cme.linkedEvents.map(e => e.activityID.slice(11)).join(", ")} />}
+                          {cme.linkedEvents && <InfoChip label="Bağlantılı Olaylar" value={cme.linkedEvents.map(e => e.activityID.slice(11)).join(", ")} />}
                           {best?.enlilList.map((e, i) => e.impactList?.map((imp, j) => (
-                            <InfoChip key={`${i}-${j}`} label={`Impact: ${imp.location}`} value={`~${fmtDate(imp.arrivalTime)}${imp.isGlancingBlow ? " (glancing)" : ""}`} danger />
+                            <InfoChip key={`${i}-${j}`} label={`Çarpma: ${imp.location}`} value={`~${fmtDate(imp.arrivalTime)}${imp.isGlancingBlow ? " (yüzeysel)" : ""}`} danger />
                           )))}
                         </div>
                         <a href={cme.link} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: "0.75rem", color: "#FF6B35", fontSize: "0.75rem", textDecoration: "none" }}>
-                          🔗 View on DONKI →
+                          🔗 DONKI'de Görüntüle →
                         </a>
                       </div>
                     </td>
@@ -460,9 +441,9 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
   return (
     <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
-        🧲 GEOMAGNETIC STORM EVENTS
+        🧲 JEOMANYETİK FIRTINA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
-          NASA NOAA · {gstList.length} records
+          NASA NOAA · {gstList.length} kayıt
         </span>
       </h2>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -485,7 +466,7 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
                         padding: "0.2rem 0.5rem", borderRadius: "4px",
                         background: "rgba(255,45,85,0.2)", color: "#FF2D55", border: "1px solid rgba(255,45,85,0.4)",
                         animation: "blink 1.5s ease infinite",
-                      }}>NEW · API UPDATE</span>
+                      }}>YENİ · API GÜNCELLEMESİ</span>
                     )}
                   </div>
                   <div style={{ color: "#8B9AC0", fontSize: "0.75rem" }}>
@@ -502,7 +483,7 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
 
               {/* Kp index timeline */}
               <div style={{ marginTop: "1.25rem" }}>
-                <div style={{ fontSize: "0.7rem", color: "#8B9AC0", marginBottom: "0.6rem", letterSpacing: "0.08em" }}>KP INDEX READINGS</div>
+                <div style={{ fontSize: "0.7rem", color: "#8B9AC0", marginBottom: "0.6rem", letterSpacing: "0.08em" }}>KP ENDEKSİ ÖLÇÜMLERI</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                   {gst.allKpIndex.map((k, i) => {
                     const { cls: kc } = kpLevel(k.kpIndex);
@@ -535,7 +516,7 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
 
               {/* Notifications */}
               <div style={{ marginTop: "0.75rem", fontSize: "0.7rem", color: "#8B9AC0" }}>
-                📨 {gst.sentNotifications.length} notification{gst.sentNotifications.length !== 1 ? "s" : ""} sent
+                📨 {gst.sentNotifications.length} bildirim gönderildi
               </div>
             </div>
           );
@@ -552,25 +533,25 @@ function InfoCards() {
   const cards = [
     {
       icon: "☀️",
-      title: "What is a CME?",
-      body: "A Coronal Mass Ejection (CME) is a massive burst of plasma and magnetic field from the Sun's corona. When Earth-directed, they can trigger geomagnetic storms, disrupt satellites, and cause widespread auroras.",
+      title: "CME Nedir?",
+      body: "Koronel Kütle Fırlatma (CME), Güneş'in koronasından fırlayan devasa bir plazma ve manyetik alan patlamasıdır. Dünya'ya yöneldiklerinde jeomanyetik fırtınalar tetikleyebilir, uyduları sekteye uğratabilir ve geniş alanlarda aurora oluşturabilirler.",
     },
     {
       icon: "🛡️",
-      title: "Protect Yourself",
-      body: "Avoid high-altitude flights during G4–G5 events. Backup critical data. Surge-protect electronics. Power grid operators should pre-activate protective protocols.",
+      title: "Kendinizi Koruyun",
+      body: "G4–G5 olaylarında yüksek irtifa uçuşlarından kaçının. Kritik verilerinizi yedekleyin. Elektroniklerinizi aşırı gerilime karşı koruyun. Elektrik şebekesi operatörleri koruyucu protokolleri önceden devreye almalıdır.",
     },
     {
       icon: "🔭",
-      title: "Data Sources",
-      body: "This system uses NASA's DONKI (Database Of Notifications, Knowledge, and Information) and NOAA SWPC real-time feeds. All data is publicly available.",
+      title: "Veri Kaynakları",
+      body: "Bu sistem NASA'nın DONKI (Bildirim, Bilgi ve Enformasyon Veritabanı) ve NOAA SWPC gerçek zamanlı akışlarını kullanmaktadır. Tüm veriler kamuya açıktır.",
       link: "https://api.nasa.gov",
     },
   ];
   return (
     <section id="info" style={{ padding: "2rem 2rem 6rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
       <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
-        📚 KNOWLEDGE BASE
+        📚 BİLGİ BANKASI
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
         {cards.map((c, i) => (
@@ -580,7 +561,7 @@ function InfoCards() {
             <p style={{ color: "#8B9AC0", fontSize: "0.83rem", lineHeight: 1.7 }}>{c.body}</p>
             {c.link && (
               <a href={c.link} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: "1rem", color: "#FF6B35", fontSize: "0.75rem", textDecoration: "none" }}>
-                → NASA Open Data Portal
+                → NASA Açık Veri Portalı
               </a>
             )}
           </div>
@@ -608,11 +589,11 @@ function Toast({ visible, gst }: { visible: boolean; gst: GST }) {
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.4rem" }}>
         <span className="live-dot" />
         <span className="font-orbitron" style={{ color: "#FF2D55", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em" }}>
-          NEW API DATA RECEIVED
+          YENİ API VERİSİ ALINDI
         </span>
       </div>
       <div style={{ color: "#E8EAF0", fontSize: "0.82rem", fontWeight: 600 }}>
-        GST Event — {g} {label} Storm
+        GST Olayı — {g} {label} Fırtınası
       </div>
       <div style={{ color: "#8B9AC0", fontSize: "0.73rem", marginTop: "0.2rem" }}>
         {fmtDT(gst.startTime)} · Max Kp {kp.toFixed(2)}
@@ -635,10 +616,10 @@ function Footer() {
     }}>
       <div>
         <span className="font-orbitron" style={{ color: "#FF6B35" }}>☀️ SolarWatch</span>
-        {" "} — Built for NASA Space Apps Hackathon
+        {" "} — NASA Space Apps Hackathon için geliştirildi
       </div>
       <div style={{ display: "flex", gap: "1.5rem" }}>
-        <a href="https://api.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "#8B9AC0", textDecoration: "none" }}>NASA Open Data</a>
+        <a href="https://api.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "#8B9AC0", textDecoration: "none" }}>NASA Açık Veri</a>
         <a href="https://donki.nasa.gov" target="_blank" rel="noopener noreferrer" style={{ color: "#8B9AC0", textDecoration: "none" }}>DONKI API</a>
         <a href="https://www.noaa.gov/space-weather" target="_blank" rel="noopener noreferrer" style={{ color: "#8B9AC0", textDecoration: "none" }}>NOAA SWPC</a>
       </div>
@@ -671,7 +652,7 @@ export default function Home() {
       <StarField />
       <Navbar />
       <main style={{ position: "relative", zIndex: 1 }}>
-        <HeroSection latestKp={latestKp} />
+        <HeroSection latestKp={latestKp} kpIndex={latestKp} />
         <StatusDashboard gstList={gstList} cmeList={CME_DATA} />
         <CmeTable cmeList={CME_DATA} />
         <GstPanel gstList={gstList} newEntryId={newEntryId} />
