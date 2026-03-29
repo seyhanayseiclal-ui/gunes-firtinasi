@@ -147,7 +147,7 @@ function Navbar() {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
         <span style={{ fontSize: "1.5rem" }}>☀️</span>
-        <span className="font-orbitron" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FF6B35", letterSpacing: "0.05em" }}>
+        <span className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FF6B35", letterSpacing: "0.05em" }}>
           SolarWatch
         </span>
       </div>
@@ -179,11 +179,11 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
         <div style={{ flex: "1 1 480px" }} className="fade-up">
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
             <span className="live-dot" />
-            <span style={{ fontSize: "0.75rem", letterSpacing: "0.15em", color: "#FF2D55", fontFamily: "var(--font-orbitron)", fontWeight: 600 }}>
+            <span style={{ fontSize: "0.75rem", letterSpacing: "0.15em", color: "#FF2D55", fontFamily: "var(--font-heading)", fontWeight: 600 }}>
               CANLI İZLEME
             </span>
           </div>
-          <h1 className="font-orbitron" style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)", fontWeight: 900, lineHeight: 1.1, marginBottom: "1.25rem", letterSpacing: "0.02em" }}>
+          <h1 className="font-heading" style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)", fontWeight: 900, lineHeight: 1.1, marginBottom: "1.25rem", letterSpacing: "0.02em" }}>
             <span className="gradient-solar">GÜNEŞ FIRTINASI</span>
             <br />
             <span style={{ color: "#E8EAF0" }}>ERKEN UYARI</span>
@@ -202,7 +202,7 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
             color: latestKp >= 7 ? "#FF2D55" : latestKp >= 6 ? "#FF6B35" : "#FFB347",
             borderColor: latestKp >= 7 ? "rgba(255,45,85,0.5)" : latestKp >= 6 ? "rgba(255,107,53,0.5)" : "rgba(255,179,71,0.5)",
             background: latestKp >= 7 ? "rgba(255,45,85,0.1)" : latestKp >= 6 ? "rgba(255,107,53,0.1)" : "rgba(255,179,71,0.1)",
-            fontFamily: "var(--font-orbitron)", fontSize: "0.8rem", fontWeight: 700,
+            fontFamily: "var(--font-heading)", fontSize: "0.8rem", fontWeight: 700,
           }}>
             <span style={{ animation: "blink 1s ease infinite", display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "currentColor" }} />
             GÜNCEL UYARI: {g} — {label.toUpperCase()} · Kp {latestKp.toFixed(2)}
@@ -211,7 +211,7 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
             <a href="#dashboard" style={{
               padding: "0.75rem 1.75rem", borderRadius: "8px",
               background: "linear-gradient(135deg, #FF6B35, #FF2D55)",
-              color: "#fff", fontFamily: "var(--font-orbitron)", fontSize: "0.8rem", fontWeight: 700,
+              color: "#fff", fontFamily: "var(--font-heading)", fontSize: "0.8rem", fontWeight: 700,
               textDecoration: "none", letterSpacing: "0.08em",
               boxShadow: "0 0 20px rgba(255,107,53,0.4)",
               transition: "all 0.2s",
@@ -222,7 +222,7 @@ function HeroSection({ latestKp, kpIndex }: { latestKp: number; kpIndex: number 
             <a href="#info" style={{
               padding: "0.75rem 1.75rem", borderRadius: "8px",
               background: "transparent", border: "1px solid rgba(255,107,53,0.4)",
-              color: "#FF6B35", fontFamily: "var(--font-orbitron)", fontSize: "0.8rem", fontWeight: 700,
+              color: "#FF6B35", fontFamily: "var(--font-heading)", fontSize: "0.8rem", fontWeight: 700,
               textDecoration: "none", letterSpacing: "0.08em",
               transition: "all 0.2s",
             }}
@@ -309,7 +309,7 @@ function StatusDashboard({ gstList, cmeList }: { gstList: GST[]; cmeList: CME[] 
 
   return (
     <section id="dashboard" style={{ padding: "5rem 2rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="font-orbitron" style={{ textAlign: "center", fontSize: "1.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "3rem" }}>
+      <h2 className="font-heading" style={{ textAlign: "center", fontSize: "1.6rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "3rem" }}>
         ⚡ GERÇEK ZAMANLI DURUM
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
@@ -318,7 +318,7 @@ function StatusDashboard({ gstList, cmeList }: { gstList: GST[]; cmeList: CME[] 
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg, ${c.color}, transparent)` }} />
             <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{c.icon}</div>
             <div style={{ color: "#8B9AC0", fontSize: "0.75rem", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{c.title.toUpperCase()}</div>
-            <div className="font-orbitron" style={{ fontSize: "1.5rem", fontWeight: 800, color: c.color, marginBottom: "0.4rem" }}>
+            <div className="font-heading" style={{ fontSize: "1.5rem", fontWeight: 800, color: c.color, marginBottom: "0.4rem" }}>
               {c.main ?? <><CountUp target={c.mainNum!} />{c.mainSuffix}</>}
             </div>
             <div style={{ color: "#8B9AC0", fontSize: "0.8rem", marginBottom: "0.5rem" }}>{c.sub}</div>
@@ -337,7 +337,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
+      <h2 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
         🌪️ KORONEL KÜTLE FIRLATMA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
           NASA M2M KATALOG · {cmeList.length} kayıt
@@ -349,7 +349,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,107,53,0.2)" }}>
               {["Aktivite ID", "Başlangıç Zamanı", "Hız (km/s)", "Tür", "Yarı Açı", "Aletler", "Dünya-GB", ""].map(h => (
-                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8B9AC0", fontFamily: "var(--font-orbitron)", fontSize: "0.65rem", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{h.toUpperCase()}</th>
+                <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", color: "#8B9AC0", fontFamily: "var(--font-heading)", fontSize: "0.65rem", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{h.toUpperCase()}</th>
               ))}
             </tr>
           </thead>
@@ -370,7 +370,7 @@ function CmeTable({ cmeList }: { cmeList: CME[] }) {
                   onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = "rgba(255,107,53,0.04)"; }}
                   onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = "transparent"; }}
                 >
-                  <td style={{ padding: "0.8rem 1rem", color: "#E8EAF0", fontFamily: "var(--font-orbitron)", fontSize: "0.7rem" }}>{cme.activityID.slice(0, 23)}</td>
+                  <td style={{ padding: "0.8rem 1rem", color: "#E8EAF0", fontFamily: "var(--font-heading)", fontSize: "0.7rem" }}>{cme.activityID.slice(0, 23)}</td>
                   <td style={{ padding: "0.8rem 1rem", color: "#8B9AC0", whiteSpace: "nowrap" }}>{fmtDate(cme.startTime)}</td>
                   <td style={{ padding: "0.8rem 1rem" }}>
                     <span style={{ color: cmeSpeedColor(speed), fontWeight: 700 }}>{speed}</span>
@@ -440,7 +440,7 @@ function InfoChip({ label, value, danger }: { label: string; value: string; dang
 function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string | null }) {
   return (
     <section style={{ padding: "2rem 2rem 5rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
+      <h2 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
         🧲 JEOMANYETİK FIRTINA OLAYLARI
         <span style={{ fontSize: "0.7rem", color: "#8B9AC0", marginLeft: "1rem", fontWeight: 400, letterSpacing: "0.05em" }}>
           NASA NOAA · {gstList.length} kayıt
@@ -457,12 +457,12 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
                     {isNew && <span className="live-dot" />}
-                    <span className="font-orbitron" style={{ color: "#E8EAF0", fontSize: "0.85rem", fontWeight: 700 }}>
+                    <span className="font-heading" style={{ color: "#E8EAF0", fontSize: "0.85rem", fontWeight: 700 }}>
                       GST · {fmtDT(gst.startTime)}
                     </span>
                     {isNew && (
                       <span style={{
-                        fontSize: "0.65rem", fontFamily: "var(--font-orbitron)", fontWeight: 700,
+                        fontSize: "0.65rem", fontFamily: "var(--font-heading)", fontWeight: 700,
                         padding: "0.2rem 0.5rem", borderRadius: "4px",
                         background: "rgba(255,45,85,0.2)", color: "#FF2D55", border: "1px solid rgba(255,45,85,0.4)",
                         animation: "blink 1.5s ease infinite",
@@ -474,7 +474,7 @@ function GstPanel({ gstList, newEntryId }: { gstList: GST[]; newEntryId: string 
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                  <div className={cls} style={{ padding: "0.4rem 0.9rem", borderRadius: "6px", border: "1px solid", fontFamily: "var(--font-orbitron)", fontSize: "0.8rem", fontWeight: 800 }}>
+                  <div className={cls} style={{ padding: "0.4rem 0.9rem", borderRadius: "6px", border: "1px solid", fontFamily: "var(--font-heading)", fontSize: "0.8rem", fontWeight: 800 }}>
                     {g} — {label} · Kp {kp.toFixed(2)}
                   </div>
                   <a href={gst.link} target="_blank" rel="noopener noreferrer" style={{ color: "#FF6B35", fontSize: "0.75rem", textDecoration: "none" }}>🔗 DONKI</a>
@@ -550,14 +550,14 @@ function InfoCards() {
   ];
   return (
     <section id="info" style={{ padding: "2rem 2rem 6rem", position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="font-orbitron" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
+      <h2 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "0.1em", color: "#E8EAF0", marginBottom: "2rem" }}>
         📚 BİLGİ BANKASI
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
         {cards.map((c, i) => (
           <div key={i} className="glass" style={{ padding: "2rem" }}>
             <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{c.icon}</div>
-            <h3 className="font-orbitron" style={{ fontSize: "0.9rem", fontWeight: 700, color: "#FF6B35", marginBottom: "0.8rem", letterSpacing: "0.05em" }}>{c.title.toUpperCase()}</h3>
+            <h3 className="font-heading" style={{ fontSize: "0.9rem", fontWeight: 700, color: "#FF6B35", marginBottom: "0.8rem", letterSpacing: "0.05em" }}>{c.title.toUpperCase()}</h3>
             <p style={{ color: "#8B9AC0", fontSize: "0.83rem", lineHeight: 1.7 }}>{c.body}</p>
             {c.link && (
               <a href={c.link} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: "1rem", color: "#FF6B35", fontSize: "0.75rem", textDecoration: "none" }}>
@@ -588,7 +588,7 @@ function Toast({ visible, gst }: { visible: boolean; gst: GST }) {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.4rem" }}>
         <span className="live-dot" />
-        <span className="font-orbitron" style={{ color: "#FF2D55", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em" }}>
+        <span className="font-heading" style={{ color: "#FF2D55", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em" }}>
           YENİ API VERİSİ ALINDI
         </span>
       </div>
@@ -615,7 +615,7 @@ function Footer() {
       color: "#8B9AC0", fontSize: "0.78rem",
     }}>
       <div>
-        <span className="font-orbitron" style={{ color: "#FF6B35" }}>☀️ SolarWatch</span>
+        <span className="font-heading" style={{ color: "#FF6B35" }}>☀️ SolarWatch</span>
         {" "} — NASA Space Apps Hackathon için geliştirildi
       </div>
       <div style={{ display: "flex", gap: "1.5rem" }}>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Orbitron, Plus_Jakarta_Sans } from "next/font/google";
+import { Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-heading",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const jakarta = Plus_Jakarta_Sans({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" className={`${orbitron.variable} ${jakarta.variable}`}>
+    <html lang="tr" className={`${spaceGrotesk.variable} ${jakarta.variable}`}>
       <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );

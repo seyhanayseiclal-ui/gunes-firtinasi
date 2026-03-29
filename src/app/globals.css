@@ -103,7 +103,7 @@ body {
   -webkit-text-fill-color: transparent;
   animation: shimmer 3s linear infinite;
 }
-.font-orbitron { font-family: var(--font-orbitron, sans-serif); }
+.font-heading { font-family: var(--font-heading, sans-serif); }
 .live-dot {
   width: 8px; height: 8px;
   background: #FF2D55;
